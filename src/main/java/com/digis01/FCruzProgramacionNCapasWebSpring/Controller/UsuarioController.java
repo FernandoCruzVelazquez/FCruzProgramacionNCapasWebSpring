@@ -92,6 +92,8 @@ public class UsuarioController {
 
             model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
             model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+            
+            
 
             return "formulario";
         }
