@@ -40,6 +40,7 @@ public class Usuario {
     private String password;
     @Pattern(regexp = "^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z]{2}$",message = "CURP Invalido")
     private String CURP;
+    private String foto;
     @Valid
     public Rol Rol;
     @Valid
@@ -163,6 +164,14 @@ public class Usuario {
     
     public void setCURP (String CURP){
         this.CURP = CURP;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
     public List<Direccion> getDireccion() {

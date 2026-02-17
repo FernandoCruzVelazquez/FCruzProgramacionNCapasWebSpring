@@ -122,5 +122,47 @@ public class UsuarioDAOImplementation implements IUsuario {
         });
         return result;
     }
+    
+    @Override
+    public Result Add(Usuario usuario) {
+
+        Result result = new Result();
+
+        try {
+
+            JdbcTemplate.update(
+                "CALL UsuarioDireccionAddSP(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+
+                usuario.getNombre(),
+                usuario.getApellidoPaterno(),
+                usuario.getApellidosMaterno(),
+                usuario.getEmail(),
+                usuario.getPassword(),
+                usuario.getSexo(),
+                usuario.getTelefono(),
+                usuario.getCelular(),
+                usuario.getCURP(),
+                usuario.getUserName(),
+                usuario.getFechaNacimiento(),
+                usuario.getRol().getIdRol(),
+                usuario.getFoto(),
+
+                usuario.getDireccion().get(0).getCalle(),
+                usuario.getDireccion().get(0).getNumeroIInteriori(),
+                usuario.getDireccion().get(0).getNumeroExterior(),
+                usuario.getDireccion().get(0).getColonia().getIdColonia()
+            );
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+            ex.printStackTrace();
+        }
+
+        return result;
+    }
+
 
 }

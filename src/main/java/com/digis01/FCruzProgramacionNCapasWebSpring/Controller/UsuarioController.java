@@ -14,6 +14,7 @@ import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Pais;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Result;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Rol;
 
+import org.springframework.web.multipart.MultipartFile;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.Base64;
 
 @Controller
 @RequestMapping("Usuario")
@@ -86,17 +88,46 @@ public class UsuarioController {
     }
     
     @PostMapping("form")
-    public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, Model model){ 
+    public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @RequestParam(value = "foto", required = false) MultipartFile foto, Model model) {
 
         if(bindingResult.hasErrors()){
 
             model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
             model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-            
-            
 
             return "formulario";
         }
+
+        if (foto != null && !foto.isEmpty()) {
+
+            String tipo = foto.getContentType();
+
+            if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
+
+                try {
+                    byte[] bytes = foto.getBytes();
+                    String base64 = Base64.getEncoder().encodeToString(bytes);
+
+                    String imagenFinal = "data:" + tipo + ";base64," + base64;
+
+                    usuario.setFoto(imagenFinal);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+
+                model.addAttribute("errorImagen", "Solo JPG o PNG");
+
+                model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+                model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+
+                return "formulario";
+            }
+        }
+
+        usuarioDAOImplementation.Add(usuario);
 
         return "redirect:/Usuario";
     }

@@ -49,7 +49,7 @@
 
                 <div class="card-body p-4">
 
-                    <form method="post" th:object="${usuario}" th:action="@{/Usuario/form}">
+                    <form method="post" th:object="${usuario}" th:action="@{/Usuario/form}" enctype="multipart/form-data">
 
                     
                         <h5 class="text-white border-bottom pb-2 mb-3">
@@ -57,6 +57,39 @@
                         </h5>
 
                         <div class="row g-3">
+
+                            
+                            <div class="col-md-12 text-center mb-4">
+
+                                <label class="form-label fw-bold d-block">Foto de Perfil</label>
+
+                                <div class="position-relative d-inline-block overflow-hidden rounded-circle"
+                                    style="width:150px; height:150px;">
+
+                                    <img id="previewFoto"
+                                        src=""
+                                        class="w-100 h-100"
+                                        style="object-fit:cover; display:none;">
+
+                                    <div id="iconoDefault"
+                                        class="d-flex align-items-center justify-content-center w-100 h-100"
+                                        style="background-color:#f8f9fa;">
+                                        <i class="bi bi-person-bounding-box"
+                                        style="font-size:80px; color:#6c757d;"></i>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="mt-3">
+                                    <input type="file" id="foto" name="foto"
+                                        class="form-control"
+                                        accept="image/*">
+                                </div>
+
+                            </div>
+
+
 
                             <div class="col-md-4">
                                 <label for="NombreUsuario" class="form-label fw-bold">Nombre</label>
@@ -203,36 +236,32 @@
 
                                     <div class="col-md-4">
                                         <label for="paisddl" class="form-label fw-bold">País</label>
-                                        <select class="form-select"
-                                                id="ddlpais"
-                                                th:field="*{direccion[__${iterStat.index}__].colonia.municipio.estado.pais.idPais}">
+                                        <select class="form-select" id="ddlpais" th:field="*{direccion[__${iterStat.index}__].colonia.municipio.estado.pais.idPais}">
                                             <option value="">-- Seleccione un país --</option>
-                                            <option th:each="paisItem : ${paises}"
-                                                    th:value="${paisItem.idPais}"
-                                                    th:text="${paisItem.nombre}">
+                                            <option th:each="paisItem : ${paises}" th:value="${paisItem.idPais}" th:text="${paisItem.nombre}">
                                             </option>
                                         </select>
                                     </div>
                                     
                                     <div class="col-md-3">
                                         <label for="Estadoddl" class="form-label fw-bold">Estado</label>
-                                        <select id="ddlestado" class="form-select" aria-label="Default select example">
-                                            <option value=0 selected>Selecciona un estado</option>
+                                        <select id="ddlestado" class="form-select" aria-label="Default select example" th:field="*{direccion[__${iterStat.index}__].colonia.municipio.estado.idEstado}">
+                                            <option th:each="estadoItem : ${estados}" th:value="${estadoItem.idEstado}" th:text="${estadoItem.nombre}" value=0 selected>Selecciona un estado</option>
                                         </select>
                                     </div>
 
                                     <div class="col-md-3">
-                                        <label for="municipioddl" class="form-label fw-bold">Municipio</label>
+                                        <label for="municipioddl" class="form-label fw-bold"  th:field="*{direccion[__${iterStat.index}__].colonia.municipio.idMunicipio}">Municipio</label>
                                         <select id="ddlmunicipio" class="form-select" aria-label="Default select example">
-                                            <option value=0 selected>Selecciona un municipio</option>
+                                            <option th:each="municipioItem : ${municipios}" th:value="${municipioItem.idMunicipio}" th:text="${municipioItem.nombre}" value=0 selected>Selecciona un municipio</option>
                                         </select>
                                     </div>
                                     
                                     
                                     <div class="col-md-3">
-                                        <label for="coloniaddl" class="form-label fw-bold">Colonia</label>
+                                        <label for="coloniaddl" class="form-label fw-bold" th:field="*{direccion[__${iterStat.index}__].colonia.idColonia}">Colonia</label>
                                         <select id="ddlcolonia" class="form-select " aria-label="Default select example" >
-                                            <option value=0 selected>Selecciona una colonia</option>
+                                            <option th:each="coloniaItem : ${colonias}" th:value="${coloniaItem.idColonia}" th:text="${coloniaItem.nombre}"value=0 selected>Selecciona una colonia</option>
                                         </select>
                                     </div>
 
@@ -270,187 +299,224 @@
 
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const input = document.getElementById("foto");
+        const preview = document.getElementById("previewFoto");
+        const icono = document.getElementById("iconoDefault");
+
+        input.addEventListener("change", function () {
+
+            console.log("Archivo seleccionado");
+
+            if (this.files && this.files.length > 0) {
+
+                const file = this.files[0];
+
+                // Validar que sea imagen
+                if (!file.type.startsWith("image/")) {
+                    alert("Por favor selecciona una imagen válida");
+                    return;
+                }
+
+                // Mostrar preview
+                const url = URL.createObjectURL(file);
+                preview.src = url;
+                preview.style.display = "block";
+                icono.style.display = "none";
+
+            } else {
+                preview.style.display = "none";
+                icono.style.display = "flex";
+            }
+
+        });
+
+    });
+</script>
+
 </body>
 
 <script>
+    
+    function SoloLetras(input, event){
+        console.log(input); 
 
-//    function SoloLetras(input, event){
-//        console.log(input); 
-//
-//        var valorCompleto = $(input).val() + event.key;
-//        console.log(valorCompleto);
-//
-//        console.log("ID:", input.id);
-//
-//        var regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-//
-//        if(regex.test(valorCompleto)){
-//            console.log("Paso la expresion regular");
-//            $("#error" + input.id).text('');
-//            $(input).removeClass('border border-danger');
-//        }else{
-//            console.log("NO paso la expresion regular");
-//            event.preventDefault();
-//            $(input).addClass('border border-danger');
-//            $("#error" + input.id).text('Solo letras').css('color','red');
-//        }
-//    }
-//
-//    function SoloLetrasBlur(input){
-//        var regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-//
-//        if(regex.test($(input).val())){
-//            console.log("Paso la expresion regular");
-//            $("#error" + input.id).text('');
-//            $(input).removeClass('border border-danger');
-//            $(input).addClass('border border-success');
-//        }
-//    }
-//
-//    function ValidarEmail(input) {
-//
-//        var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//
-//        if (regex.test($(input).val())) {
-//            $("#errorEmail").text('');
-//            $(input).removeClass('border border-danger');
-//            $(input).addClass('border border-success');
-//        } else {
-//            $("#errorEmail").text('Email inválido').css('color', 'red');
-//            $(input).removeClass('border border-success');
-//            $(input).addClass('border border-danger');
-//        }
-//    }
-//
-//    function ValidarTelefono(input) {
-//        var regex = /^[0-9]{10}$/;
-//
-//        if (regex.test($(input).val())) {
-//            $("#errorTelefono").text('');
-//            $(input).removeClass('border border-danger')
-//                    .addClass('border border-success');
-//        } else {
-//            $("#errorTelefono").text('Debe contener 10 dígitos')
-//                            .css('color', 'red');
-//            $(input).removeClass('border border-success')
-//                    .addClass('border border-danger');
-//        }
-//    }
-//
-//    function ValidarCURP(input) {
-//        var regex = /^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z]{2}$/;
-//
-//        if (regex.test($(input).val())) {
-//            $("#errorCURP").text('');
-//            $(input).removeClass('border border-danger')
-//                    .addClass('border border-success');
-//        } else {
-//            $("#errorCURP").text('CURP inválida')
-//                        .css('color', 'red');
-//            $(input).removeClass('border border-success')
-//                    .addClass('border border-danger');
-//        }
-//    }
-//
-//    function ValidarUsername(input) {
-//        var regex = /^[a-zA-Z0-9]{4,20}$/;
-//
-//        if (regex.test($(input).val())) {
-//            $("#errorUserName").text('');
-//            $(input).removeClass('border border-danger')
-//                    .addClass('border border-success');
-//        } else {
-//            $("#errorUserName").text('4-20 caracteres sin espacios')
-//                            .css('color', 'red');
-//            $(input).removeClass('border border-success')
-//                    .addClass('border border-danger');
-//        }
-//    }
-//
-//    function ValidarPassword(input) { 
-//
-//        var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,16}$/;
-//
-//        if (regex.test($(input).val())) {
-//            $("#errorPassword").text('');
-//            $(input).removeClass('border border-danger')
-//                    .addClass('border border-success');
-//        } else {
-//            $("#errorPassword")
-//                .text('8-16 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo')
-//                .css('color', 'red');
-//
-//            $(input).removeClass('border border-success')
-//                    .addClass('border border-danger');
-//        }
-//    }
-//
-//    function ValidarFechaNacimiento(input) {
-//
-//        let fechaIngresada = new Date($(input).val());
-//        let hoy = new Date();
-//
-//        if (!$(input).val()) {
-//            $("#errorFecha").text("La fecha es obligatoria").css("color", "red");
-//            $(input).removeClass('border border-success')
-//                    .addClass('border border-danger');
-//            return;
-//        }
-//
-//        let edad = hoy.getFullYear() - fechaIngresada.getFullYear();
-//        let mes = hoy.getMonth() - fechaIngresada.getMonth();
-//
-//        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaIngresada.getDate())) {
-//            edad--;
-//        }
-//
-//        if (fechaIngresada > hoy) {
-//            $("#errorFecha").text("No puede seleccionar una fecha futura")
-//                            .css("color", "red");
-//
-//            $(input).removeClass('border border-success')
-//                    .addClass('border border-danger');
-//
-//        } else if (edad < 18) {
-//            $("#errorFecha").text("Debe ser mayor de 18 años")
-//                            .css("color", "red");
-//
-//            $(input).removeClass('border border-success')
-//                    .addClass('border border-danger');
-//
-//        } else {
-//            $("#errorFecha").text("");
-//
-//            $(input).removeClass('border border-danger')
-//                    .addClass('border border-success');
-//        }
-//    }
-//
-//    function ValidarSexo() {
-//
-//        let seleccionado = $("input[name='sexo']:checked").val();
-//
-//        if (!seleccionado) {
-//
-//            $("#errorSexo")
-//                .text("Debe seleccionar una opción")
-//                .css("color", "red");
-//
-//            $("input[name='sexo']")
-//                .addClass("is-invalid");
-//
-//            return false;
-//
-//        } else {
-//
-//            $("#errorSexo").text("");
-//
-//            $("input[name='sexo']")
-//                .removeClass("is-invalid");
-//
-//            return true;
-//        }
-//    }
+        var valorCompleto = $(input).val() + event.key;
+        console.log(valorCompleto);
+
+        console.log("ID:", input.id);
+
+        var regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+        if(regex.test(valorCompleto)){
+            console.log("Paso la expresion regular");
+            $("#error" + input.id).text('');
+            $(input).removeClass('border border-danger');
+        }else{
+            console.log("NO paso la expresion regular");
+            event.preventDefault();
+            $(input).addClass('border border-danger');
+            $("#error" + input.id).text('Solo letras').css('color','red');
+        }
+    }
+
+    function SoloLetrasBlur(input){
+        var regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+        if(regex.test($(input).val())){
+            console.log("Paso la expresion regular");
+            $("#error" + input.id).text('');
+            $(input).removeClass('border border-danger');
+            $(input).addClass('border border-success');
+        }
+    }
+
+    function ValidarEmail(input) {
+
+        var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (regex.test($(input).val())) {
+            $("#errorEmail").text('');
+            $(input).removeClass('border border-danger');
+            $(input).addClass('border border-success');
+        } else {
+            $("#errorEmail").text('Email inválido').css('color', 'red');
+            $(input).removeClass('border border-success');
+            $(input).addClass('border border-danger');
+        }
+    }
+
+    function ValidarTelefono(input) {
+        var regex = /^[0-9]{10}$/;
+
+        if (regex.test($(input).val())) {
+            $("#errorTelefono").text('');
+            $(input).removeClass('border border-danger')
+                    .addClass('border border-success');
+        } else {
+            $("#errorTelefono").text('Debe contener 10 dígitos')
+                            .css('color', 'red');
+            $(input).removeClass('border border-success')
+                    .addClass('border border-danger');
+        }
+    }
+
+    function ValidarCURP(input) {
+        var regex = /^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z]{2}$/;
+
+        if (regex.test($(input).val())) {
+            $("#errorCURP").text('');
+            $(input).removeClass('border border-danger')
+                    .addClass('border border-success');
+        } else {
+            $("#errorCURP").text('CURP inválida')
+                        .css('color', 'red');
+            $(input).removeClass('border border-success')
+                    .addClass('border border-danger');
+        }
+    }
+
+    function ValidarUsername(input) {
+        var regex = /^[a-zA-Z0-9]{4,20}$/;
+
+        if (regex.test($(input).val())) {
+            $("#errorUserName").text('');
+            $(input).removeClass('border border-danger')
+                    .addClass('border border-success');
+        } else {
+            $("#errorUserName").text('4-20 caracteres sin espacios')
+                            .css('color', 'red');
+            $(input).removeClass('border border-success')
+                    .addClass('border border-danger');
+        }
+    }
+
+    function ValidarPassword(input) { 
+
+        var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&._-])[A-Za-z\d@$!%*?&._-]{8,16}$/;
+
+        if (regex.test($(input).val())) {
+            $("#errorPassword").text('');
+            $(input).removeClass('border border-danger')
+                    .addClass('border border-success');
+        } else {
+            $("#errorPassword")
+                .text('8-16 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo')
+                .css('color', 'red');
+
+            $(input).removeClass('border border-success')
+                    .addClass('border border-danger');
+        }
+    }
+
+    function ValidarFechaNacimiento(input) {
+
+        let fechaIngresada = new Date($(input).val());
+        let hoy = new Date();
+
+        if (!$(input).val()) {
+            $("#errorFecha").text("La fecha es obligatoria").css("color", "red");
+            $(input).removeClass('border border-success')
+                    .addClass('border border-danger');
+            return;
+        }
+
+        let edad = hoy.getFullYear() - fechaIngresada.getFullYear();
+        let mes = hoy.getMonth() - fechaIngresada.getMonth();
+
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaIngresada.getDate())) {
+            edad--;
+        }
+
+        if (fechaIngresada > hoy) {
+            $("#errorFecha").text("No puede seleccionar una fecha futura")
+                            .css("color", "red");
+
+            $(input).removeClass('border border-success')
+                    .addClass('border border-danger');
+
+        } else if (edad < 18) {
+            $("#errorFecha").text("Debe ser mayor de 18 años")
+                            .css("color", "red");
+
+            $(input).removeClass('border border-success')
+                    .addClass('border border-danger');
+
+        } else {
+            $("#errorFecha").text("");
+
+            $(input).removeClass('border border-danger')
+                    .addClass('border border-success');
+        }
+    }
+
+    function ValidarSexo() {
+
+        let seleccionado = $("input[name='sexo']:checked").val();
+
+        if (!seleccionado) {
+
+            $("#errorSexo")
+                .text("Debe seleccionar una opción")
+                .css("color", "red");
+
+            $("input[name='sexo']")
+                .addClass("is-invalid");
+
+            return false;
+
+        } else {
+
+            $("#errorSexo").text("");
+
+            $("input[name='sexo']")
+                .removeClass("is-invalid");
+
+            return true;
+        }
+    }
 
 
 
@@ -630,10 +696,8 @@
                 });
             }
         });
-
-
-
     });
+
 </script>
 
 </html>
