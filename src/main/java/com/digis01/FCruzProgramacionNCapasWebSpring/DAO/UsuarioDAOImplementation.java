@@ -79,6 +79,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                     usuario.setFechaNacimiento(resultSet.getDate("FechaNacimiento"));
                     usuario.setCelular(resultSet.getString("Celular"));
                     usuario.setTelefono(resultSet.getString("Telefono"));
+                    usuario.setFoto(resultSet.getString("Foto"));
                     
                     usuario.Rol = new Rol();
                     usuario.Rol.setIdRol(resultSet.getInt("IdRol"));
@@ -163,6 +164,52 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         return result;
     }
+    
+    @Override
+    public Result Update(Usuario usuario) {
+
+        Result result = new Result();
+
+        try {
+
+            JdbcTemplate.update("CALL UsuarioUpdateSP(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    usuario.getIdUsuario(),
+                    usuario.getUserName(),
+                    usuario.getNombre(),
+                    usuario.getApellidoPaterno(),
+                    usuario.getApellidosMaterno(),
+                    usuario.getFechaNacimiento(),
+                    usuario.getPassword(),
+                    usuario.getEmail(),
+                    usuario.getSexo(),
+                    usuario.getTelefono(),
+                    usuario.getCelular(),
+                    usuario.getCURP(),
+                    usuario.getRol().getIdRol()
+            );
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result Delete(int idUsuario) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public Result GetById(int idUsuario) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
 
 
 }

@@ -1,0 +1,20 @@
+.gradient-custom {
+    background: linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(107, 42, 42, 1) 50%,
+        rgba(26, 23, 5, 1 ) 100%
+    );
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.form-check-input {
+    background-color: #212529;
+    border: 2px solid #6c757d;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}

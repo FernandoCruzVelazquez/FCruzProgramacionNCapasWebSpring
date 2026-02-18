@@ -58,6 +58,7 @@ public class UsuarioController {
     
     @GetMapping("form")
     public String Accion(Model model) {
+        
 
         Usuario usuario = new Usuario();
 
@@ -88,49 +89,54 @@ public class UsuarioController {
     }
     
     @PostMapping("form")
-    public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @RequestParam(value = "foto", required = false) MultipartFile foto, Model model) {
+    public String Accion(
+            @Valid @ModelAttribute("usuario") Usuario usuario,
+            BindingResult bindingResult,
+            @RequestParam(value = "foto", required = false) MultipartFile foto,
+            Model model) {
 
-        if(bindingResult.hasErrors()){
-
+        // Si hay errores de validación
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("usuarios", usuarioDAOImplementation.GetAll().objects);
             model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
             model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-
-            return "formulario";
+            model.addAttribute("abrirModalUsuario", true); // Bandera para abrir el modal
+            return "GetAll"; // Regresa a la página principal con el modal abierto
         }
 
+        // Procesar foto
         if (foto != null && !foto.isEmpty()) {
-
             String tipo = foto.getContentType();
 
             if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
-
                 try {
                     byte[] bytes = foto.getBytes();
                     String base64 = Base64.getEncoder().encodeToString(bytes);
-
                     String imagenFinal = "data:" + tipo + ";base64," + base64;
-
                     usuario.setFoto(imagenFinal);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
             } else {
-
                 model.addAttribute("errorImagen", "Solo JPG o PNG");
-
+                model.addAttribute("usuarios", usuarioDAOImplementation.GetAll().objects);
                 model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
                 model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-
-                return "formulario";
+                model.addAttribute("abrirModalUsuario", true); // Mantener modal abierto
+                return "GetAll";
             }
         }
 
-        usuarioDAOImplementation.Add(usuario);
+        // Guardar o actualizar usuario
+        if (usuario.getIdUsuario() == 0) {
+            usuarioDAOImplementation.Add(usuario);
+        } else {
+            usuarioDAOImplementation.Update(usuario);
+        }
 
-        return "redirect:/Usuario";
+        return "redirect:/Usuario"; // Si todo sale bien, redirige normalmente
     }
+
 
 
     
