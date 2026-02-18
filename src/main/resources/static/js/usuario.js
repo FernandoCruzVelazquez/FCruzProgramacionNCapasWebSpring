@@ -1,37 +1,43 @@
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function () {
 
         const input = document.getElementById("foto");
-        const preview = document.getElementById("previewFoto");
         const icono = document.getElementById("iconoDefault");
+        const wrapper = document.querySelector(".foto-wrapper");
 
         input.addEventListener("change", function () {
 
-            console.log("Archivo seleccionado");
+            const file = this.files[0];
 
-            if (this.files && this.files.length > 0) {
+            if (file) {
+                const reader = new FileReader();
 
-                const file = this.files[0];
+                reader.onload = function (e) {
 
-                // Validar que sea imagen
-                if (!file.type.startsWith("image/")) {
-                    alert("Por favor selecciona una imagen válida");
-                    return;
-                }
+                    let img = document.getElementById("previewFoto");
 
-                // Mostrar preview
-                const url = URL.createObjectURL(file);
-                preview.src = url;
-                preview.style.display = "block";
-                icono.style.display = "none";
+                    if (!img) {
+                        img = document.createElement("img");
+                        img.id = "previewFoto";
+                        img.className = "w-100 h-100";
+                        img.style.objectFit = "cover";
+                        wrapper.appendChild(img);
+                    }
 
-            } else {
-                preview.style.display = "none";
-                icono.style.display = "flex";
+                    img.src = e.target.result;
+
+                    if (icono) {
+                        icono.remove();
+                    }
+                };
+
+                reader.readAsDataURL(file);
             }
 
         });
 
     });
+
+
 
     function SoloLetras(input, event){
         console.log(input); 
