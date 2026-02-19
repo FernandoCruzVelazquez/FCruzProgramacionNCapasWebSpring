@@ -53,8 +53,17 @@ public class UsuarioController {
         Result result = usuarioDAOImplementation.GetAll();
         
         model.addAttribute("usuarios", result.objects);
+        
         return "GetAll";
     } 
+    
+    @PostMapping("/update")
+    public String Update(@ModelAttribute Usuario usuario) {
+
+        usuarioDAOImplementation.Update(usuario);
+        return "redirect:/Usuario";
+    }
+
     
     @GetMapping("form")
     public String Accion(Model model) {
@@ -95,16 +104,16 @@ public class UsuarioController {
             @RequestParam(value = "foto", required = false) MultipartFile foto,
             Model model) {
 
-        // Si hay errores de validación
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("usuarios", usuarioDAOImplementation.GetAll().objects);
             model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
             model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-            model.addAttribute("abrirModalUsuario", true); // Bandera para abrir el modal
-            return "GetAll"; // Regresa a la página principal con el modal abierto
+            model.addAttribute("abrirModalUsuario", true); 
+            return "GetAll"; 
         }
 
-        // Procesar foto
+      
         if (foto != null && !foto.isEmpty()) {
             String tipo = foto.getContentType();
 
@@ -127,14 +136,13 @@ public class UsuarioController {
             }
         }
 
-        // Guardar o actualizar usuario
         if (usuario.getIdUsuario() == 0) {
             usuarioDAOImplementation.Add(usuario);
         } else {
             usuarioDAOImplementation.Update(usuario);
         }
 
-        return "redirect:/Usuario"; // Si todo sale bien, redirige normalmente
+        return "redirect:/Usuario"; 
     }
 
 
@@ -169,12 +177,11 @@ public class UsuarioController {
 
     
     @GetMapping("getEstadosByPais/{IdPais}")
-    @ResponseBody // el metodo retorna un dato estructurado (JSON) y no una vista
+    @ResponseBody
     public Result getEstadosByPais(@PathVariable("IdPais") int IdPais){
         
         Result result = estadoDAOImplementation.getEstadosByPais(IdPais);
-        
-        
+                
         return result;
     }
     

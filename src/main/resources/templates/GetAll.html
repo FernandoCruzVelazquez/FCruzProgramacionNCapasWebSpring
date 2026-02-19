@@ -5,14 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/css/getAll.css}">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    
-
 </head>
+
 <body class="gradient-custom">
 
 <div class="container mt-4">
@@ -47,22 +45,27 @@
                 <tr th:each="usuario : ${usuarios}">
 
                     <td>
-                        <button type="button"
-                                class="btn btn-warning btn-sm btnEditar"
+                        <button class="btn btn-warning"
                                 data-bs-toggle="modal"
-                                data-bs-target="#modalEditarUsuario"
+                                data-bs-target="#modalEditar"
+
                                 th:data-id="${usuario.idUsuario}"
-                                th:data-nombre="${usuario.nombre}"
-                                th:data-apellidoPaterno="${usuario.apellidoPaterno}"
-                                th:data-apellidoMaterno="${usuario.apellidosMaterno}"
-                                th:data-fechaNacimiento="${#dates.format(usuario.fechaNacimiento, 'yyyy-MM-dd')}"
-                                th:data-email="${usuario.email}"
-                                th:data-telefono="${usuario.telefono}"
-                                th:data-celular="${usuario.celular}"
                                 th:data-username="${usuario.userName}"
+                                th:data-nombre="${usuario.nombre}"
+                                th:data-appaterno="${usuario.apellidoPaterno}"
+                                th:data-apmaterno="${usuario.apellidosMaterno}"
+                                th:data-email="${usuario.email}"
+                                th:data-celular="${usuario.celular}"
+                                th:data-telefono="${usuario.telefono}"
+                                th:data-idrol="${usuario.rol.idRol}"
+                                th:data-fechanacimiento="${#dates.format(usuario.fechaNacimiento, 'yyyy-MM-dd')}"
+                                th:data-password="${usuario.password}"
+                                th:data-sexo="${usuario.sexo}"
                                 th:data-curp="${usuario.CURP}"
-                                th:data-sexo="${usuario.sexo}">
-                            <i class="bi bi-pencil-square"></i>
+
+
+                                onclick="cargarUsuario(this)">
+                            Editar
                         </button>
 
                         <button class="btn btn-danger btn-sm">
@@ -143,22 +146,9 @@
 
                                 <div class="mt-2 text-end">
 
-                                    <a href="#"
-                                        class="btn btn-warning btn-sm btnEditarDireccion"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarDireccion"
-                                        th:data-id="${direccion.idDireccion}"
-                                        th:data-idusuario="${usuario.idUsuario}"
-                                        th:data-calle="${direccion.calle}"
-                                        th:data-noext="${direccion.numeroExterior}"
-                                        th:data-noint="${direccion.NumeroIInteriori}"
-                                        th:data-colonia="${direccion.colonia.nombre}"
-                                        th:data-cp="${direccion.colonia.codigoPostal}"
-                                        th:data-municipio="${direccion.colonia.municipio.nombre}"
-                                        th:data-estado="${direccion.colonia.municipio.estado.nombre}"
-                                        th:data-pais="${direccion.colonia.municipio.estado.pais.nombre}">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+                                    
+
+
 
                                     <button class="btn btn-danger btn-sm">
                                         <i class="bi bi-trash"></i>
@@ -178,133 +168,108 @@
 
 </div>
 
-<script th:if="${abrirModalUsuario}">
-    document.addEventListener("DOMContentLoaded", function() {
-        var modalUsuario = new bootstrap.Modal(document.getElementById('modalEditarUsuario'));
-        modalUsuario.show();
-    });
-</script>
 
 
-
-<div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+<div class="modal fade" id="modalEditar" tabindex="-1" data-sexo="" data-idrol="">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
 
-      <form method="post"
-            th:action="@{/Usuario/form}"
-            enctype="multipart/form-data">
+      <form th:action="@{/Usuario/update}" method="post">
 
-        <div class="modal-header bg-warning">
+        <div class="modal-header">
           <h5 class="modal-title">Editar Usuario</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
         <div class="modal-body">
 
-          <input type="hidden" name="idUsuario" id="editIdUsuario">
+          <input type="hidden" id="idUsuario" name="idUsuario">
+          <input type="hidden" id="fechaNacimiento" name="fechaNacimiento">
+          <input type="hidden" id="password" name="password">
 
-          <div class="row g-3">
 
+          <div class="row">
             <div class="col-md-6">
-              <label class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="editNombre" name="nombre">
-              <span id="errorNombreUsuario" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}" style="color: red"></span>
+              <label>Username</label>
+              <input type="text" class="form-control" id="userName" name="userName">
             </div>
 
             <div class="col-md-6">
-                <label class="form-label">Nombre</label>
-                <input type="text" class="form-control" th:field="*{nombre}" id="editNombre">
-                <div class="text-danger" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+              <label>Nombre</label>
+              <input type="text" class="form-control" id="nombre" name="nombre">
+            </div>
+
+            <div class="col-md-6">
+              <label>Apellido Paterno</label>
+              <input type="text" class="form-control" id="apellidoPaterno" name="apellidoPaterno">
+            </div>
+
+            <div class="col-md-6">
+              <label>Apellido Materno</label>
+              <input type="text" class="form-control" id="apellidoMaterno" name="apellidosMaterno">
+            </div>
+
+            <div class="col-md-6">
+              <label>Email</label>
+              <input type="email" class="form-control" id="email" name="email">
+            </div>
+
+            <div class="col-md-6">
+              <label>Teléfono</label>
+              <input type="text" class="form-control" id="telefono" name="telefono">
+            </div>
+
+            <div class="col-md-6">
+            <label>CURP</label>
+            <input type="text" class="form-control" id="CURP" name="CURP">
             </div>
 
 
             <div class="col-md-6">
-              <label class="form-label">Apellido Paterno</label>
-              <input type="text" class="form-control" id="editApellidoPaterno" name="apellidoPaterno">
-              <span id="errorApellidoPaterno" th:if="${#fields.hasErrors('apellidoPaterno')}" th:errors="*{apellidoPaterno}" style="color: red"></span>
+              <label>Celular</label>
+              <input type="text" class="form-control" id="celular" name="celular">
             </div>
 
             <div class="col-md-6">
-              <label class="form-label">Apellido Materno</label>
-              <input type="text" class="form-control" id="editApellidoMaterno" name="apellidosMaterno">
-              <span id="errorApellidosMaterno" th:if="${#fields.hasErrors('apellidosMaterno')}" th:errors="*{apellidosMaterno}" style="color: red"></span>
+                <label class="fw-bold">Rol</label>
+                <select class="form-control" id="rol" name="rol.idRol">
+                    <option value="">-- Seleccione un rol --</option>
+                    <option th:each="rol : ${roles}"
+                            th:value="${rol.idRol}"
+                            th:text="${rol.nombreRol}">
+                    </option>
+                </select>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">Fecha de nacimiento</label>
-              <input type="date" class="form-control" id="editFechaNacimiento" name="fechaNacimiento">
-              <span id="errorFechaNacimiento" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}" style="color:red"></span>
-            </div>
 
             <div class="col-md-6">
-            <label class="form-label">CURP</label>
-            <input type="text" class="form-control" id="editCurp" name="CURP">
-            <span id="errorCURP" th:if="${#fields.hasErrors('CURP')}" th:errors="*{CURP}" style="color:red"></span>
-            </div>
+            <label class="fw-bold">Sexo</label>
 
-            <div class="col-md-6">
-              <label class="form-label">Email</label>
-              <input type="email" class="form-control" id="editEmail" name="email">
-              <span id="errorEmail" th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red"></span>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label d-block">Sexo</label>
-
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="sexo" id="sexoM" value="M">
-                    <label class="form-check-label" for="sexoM">Masculino</label>
+            <div class="d-flex gap-4 mt-2">
+                <div class="form-check">
+                    <input class="form-check-input border border-dark" type="radio" name="sexo" id="sexoM" value="M">
+                    <label class="form-check-label" for="sexoM">
+                        Masculino
+                    </label>
                 </div>
 
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="sexo" id="sexoF" value="F">
-                    <label class="form-check-label" for="sexoF">Femenino</label>
-                </div>
-                <div class="invalid-feedback d-block">
-                    <span th:if="${#fields.hasErrors('sexo')}"
-                        th:errors="*{sexo}"></span>
-                </div>
-
-            </div>
-
-            <div class="col-md-6">
-            <label class="form-label">Teléfono</label>
-            <input type="text"  class="form-control" id="editTelefono" name="telefono">
-            <span id="errorTelefono" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}" style="color:red"></span>
-            </div>
-
-            <div class="col-md-6">
-            <label class="form-label">Celular</label>
-            <input type="text" class="form-control" id="editCelular" name="celular">
-            <span id="errorCelular" th:if="${#fields.hasErrors('celular')}" th:errors="*{celular}" style="color:red"></span>
-            </div>
-
-            <div class="col-md-6">
-            <label class="form-label">Username</label>
-            <input type="text" class="form-control"  id="editUsername" name="userName" th:field="*{userName}" oncopy="return false" onpaste="return false" oncut="return false" onblur="ValidarUsername(this)" required>
-            </div>
-
-            <div class="col-md-6">
-                <label class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="editPassword" name="password" placeholder="Dejar vacío si no desea cambiar">
-                <span id="errorPassword" th:if="${#fields.hasErrors('password')}" th:errors="*{password}" style="color:red"></span>
+                <div class="form-check">
+                    <input class="form-check-input border border-dark" type="radio" name="sexo" id="sexoF" value="F">
+                    <label class="form-check-label" for="sexoF">
+                        Femenino
+                    </label>
                 </div>
             </div>
+        </div>
+
+
+
+          </div>
 
         </div>
 
         <div class="modal-footer">
-          <button type="submit"
-                  class="btn btn-success">
-              Guardar Cambios
-          </button>
-
-          <button type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal">
-              Cancelar
-          </button>
+          <button type="submit" class="btn btn-success">Guardar cambios</button>
         </div>
 
       </form>
@@ -312,6 +277,7 @@
     </div>
   </div>
 </div>
+
 
 
 <div class="modal fade" id="modalEditarDireccion" tabindex="-1">
@@ -384,10 +350,9 @@
   </div>
 </div>
 
-
-
-
 <script th:src="@{/js/Modal.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>
