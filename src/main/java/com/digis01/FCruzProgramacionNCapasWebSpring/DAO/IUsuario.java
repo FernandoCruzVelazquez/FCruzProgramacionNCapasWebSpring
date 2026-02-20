@@ -12,4 +12,6 @@ public interface IUsuario {
     Result Delete(int idUsuario);
     Result GetById(int idUsuario);
     
+    Result UpdateFoto(int idUsuario, String foto);
+    
 }

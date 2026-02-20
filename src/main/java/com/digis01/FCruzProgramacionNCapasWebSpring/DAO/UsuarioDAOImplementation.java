@@ -206,6 +206,25 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         return result;
     }
+    
+    @Override
+    public Result UpdateFoto(int idUsuario, String foto) {
+
+        Result result = new Result();
+
+        try {
+
+            JdbcTemplate.update("CALL UsuarioUpdateFotoSP(?,?)",idUsuario,foto);
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+        }
+
+        return result;
+    }
 
     @Override
     public Result Delete(int idUsuario) {

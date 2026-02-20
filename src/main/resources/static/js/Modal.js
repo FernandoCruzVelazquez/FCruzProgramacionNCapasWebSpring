@@ -160,3 +160,35 @@ function limpiarSelect(id) {
     document.getElementById(id).innerHTML =
         '<option value="">-- Seleccione --</option>';
 }
+
+
+
+
+function cargarIdUsuarioFoto(button) {
+    let id = button.getAttribute("data-id");
+    document.getElementById("fotoIdUsuario").value = id;
+}
+
+function previewImagen(event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+        const img = document.getElementById("previewNuevaFoto");
+        img.src = reader.result;
+        img.style.display = "block";
+    }
+    reader.readAsDataURL(event.target.files[0]);
+}
+
+
+document.getElementById('modalFoto').addEventListener('hidden.bs.modal', function () {
+
+    document.querySelector('input[name="archivoFoto"]').value = "";
+
+    const img = document.getElementById("previewNuevaFoto");
+    img.src = "";
+    img.style.display = "none";
+
+    document.getElementById("fotoIdUsuario").value = "";
+
+});
+

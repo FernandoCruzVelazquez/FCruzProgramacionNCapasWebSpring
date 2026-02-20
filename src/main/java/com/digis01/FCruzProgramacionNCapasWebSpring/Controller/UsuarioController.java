@@ -92,6 +92,41 @@ public class UsuarioController {
 
         return "redirect:/Usuario";
     }
+    
+    @PostMapping("/ActualizarFoto")
+    public String ActualizarFoto(@RequestParam("idUsuario") int idUsuario, @RequestParam("archivoFoto") MultipartFile foto, RedirectAttributes redirectAttributes) {
+
+        try {
+
+            if (!foto.isEmpty()) {
+
+                String tipo = foto.getContentType();
+
+                if ("image/jpeg".equals(tipo) || "image/png".equals(tipo)) {
+
+                    byte[] bytes = foto.getBytes();
+                    String base64 = Base64.getEncoder().encodeToString(bytes);
+                    String imagenFinal = "data:" + tipo + ";base64," + base64;
+
+                    Result result = usuarioDAOImplementation.UpdateFoto(idUsuario, imagenFinal);
+
+                    if (result.correct) {
+                        redirectAttributes.addFlashAttribute("success", "Foto actualizada correctamente");
+                    } else {
+                        redirectAttributes.addFlashAttribute("error", "Error al actualizar la foto");
+                    }
+
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Solo JPG o PNG");
+                }
+            }
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al procesar la imagen");
+        }
+
+        return "redirect:/Usuario";
+    }
 
 
     
