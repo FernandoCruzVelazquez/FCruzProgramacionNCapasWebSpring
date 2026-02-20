@@ -45,13 +45,16 @@ public class UsuarioDAOImplementation implements IUsuario {
                     direccion.setNumeroIInteriori(resultSet.getString("NumeroIInteriori"));
 
                     Colonia colonia = new Colonia();
+                    colonia.setIdColonia(resultSet.getInt("IdColonia"));
                     colonia.setNombre(resultSet.getString("NombreColonia"));
                     colonia.setCodigoPostal(resultSet.getString("CodigoPostal"));
 
                     Municipio municipio = new Municipio();
+                    municipio.setIdMunicipio(resultSet.getInt("IdMunicipio"));
                     municipio.setNombre(resultSet.getString("NombreMunicipio"));
 
                     Estado estado = new Estado();
+                    estado.setIdEstado(resultSet.getInt("IdEstado"));
                     estado.setNombre(resultSet.getString("NombreEstado"));
 
                     Pais pais = new Pais();

@@ -4,16 +4,16 @@ import java.util.List;
 
 public class Estado {
     
-    private int IdEstado;
+    private Integer IdEstado;
     private String Nombre;
     public Pais Pais;
 
     
-    public int getIdEstado(){
+    public Integer  getIdEstado(){
         return IdEstado;
     }
     
-    public void setIdEstado(int IdEstado){
+    public void setIdEstado(Integer IdEstado){
         this.IdEstado = IdEstado;
     }
     

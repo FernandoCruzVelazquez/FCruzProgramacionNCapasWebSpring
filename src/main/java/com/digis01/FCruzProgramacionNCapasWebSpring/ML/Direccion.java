@@ -60,9 +60,4 @@ public class Direccion {
         this.Colonia = Colonia;
     }
 
-    
-
-    
-    
-
 }

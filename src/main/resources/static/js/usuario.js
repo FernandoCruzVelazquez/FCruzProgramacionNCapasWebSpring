@@ -1,6 +1,6 @@
     document.addEventListener("DOMContentLoaded", function () {
 
-        const input = document.getElementById("foto");
+        const input = document.getElementById("archivoFoto");
         const icono = document.getElementById("iconoDefault");
         const wrapper = document.querySelector(".foto-wrapper");
 

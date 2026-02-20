@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Base64;
 
 @Controller
@@ -48,21 +49,33 @@ public class UsuarioController {
     @Autowired
     private ColoniaDAOImplementation coloniaDAOImplementation;
     
-    @GetMapping()         
+    
+    @GetMapping()          
     public String index (Model model){
         Result result = usuarioDAOImplementation.GetAll();
-        
         model.addAttribute("usuarios", result.objects);
-        
+
+        Result resultRoles = rolDAOImplementation.GetAll();  
+        model.addAttribute("roles", resultRoles.objects);
+
+        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
         return "GetAll";
     } 
     
     @PostMapping("/update")
-    public String Update(@ModelAttribute Usuario usuario) {
+    public String Update(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {      
 
-        usuarioDAOImplementation.Update(usuario);
+        Result result = usuarioDAOImplementation.Update(usuario);
+
+        if (result.correct) {
+            redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar el usuario");
+        }
+
         return "redirect:/Usuario";
     }
+
 
     
     @GetMapping("form")
@@ -97,27 +110,14 @@ public class UsuarioController {
         return "formulario"; 
     }
     
-    @PostMapping("form")
-    public String Accion(
-            @Valid @ModelAttribute("usuario") Usuario usuario,
-            BindingResult bindingResult,
-            @RequestParam(value = "foto", required = false) MultipartFile foto,
-            Model model) {
+   @PostMapping("form")
+    public String Accion(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult bindingResult, @RequestParam(value = "archivoFoto", required = false) MultipartFile foto, Model model) {
 
 
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("usuarios", usuarioDAOImplementation.GetAll().objects);
-            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-            model.addAttribute("abrirModalUsuario", true); 
-            return "GetAll"; 
-        }
-
-      
         if (foto != null && !foto.isEmpty()) {
             String tipo = foto.getContentType();
 
-            if (tipo.equals("image/jpeg") || tipo.equals("image/png")) {
+            if ("image/jpeg".equals(tipo) || "image/png".equals(tipo)) {
                 try {
                     byte[] bytes = foto.getBytes();
                     String base64 = Base64.getEncoder().encodeToString(bytes);
@@ -125,25 +125,59 @@ public class UsuarioController {
                     usuario.setFoto(imagenFinal);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    bindingResult.rejectValue("foto", "error.usuario", "Error al procesar la imagen");
                 }
             } else {
-                model.addAttribute("errorImagen", "Solo JPG o PNG");
-                model.addAttribute("usuarios", usuarioDAOImplementation.GetAll().objects);
-                model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-                model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
-                model.addAttribute("abrirModalUsuario", true); // Mantener modal abierto
-                return "GetAll";
+                bindingResult.rejectValue("foto", "error.usuario", "Solo se permiten imágenes JPG o PNG");
             }
         }
 
-        if (usuario.getIdUsuario() == 0) {
-            usuarioDAOImplementation.Add(usuario);
-        } else {
-            usuarioDAOImplementation.Update(usuario);
+        if (bindingResult.hasErrors()) {
+
+            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+
+
+            model.addAttribute("abrirModalUsuario", true); 
+            model.addAttribute("error", "Corrige los errores del formulario");
+
+
+            if (usuario.getDireccion() == null || usuario.getDireccion().isEmpty()) {
+                Direccion direccion = new Direccion();
+                Colonia colonia = new Colonia();
+                Municipio municipio = new Municipio();
+                Estado estado = new Estado();
+                Pais pais = new Pais();
+                estado.setPais(pais);
+                municipio.setEstado(estado);
+                colonia.setMunicipio(municipio);
+                direccion.setColonia(colonia);
+                usuario.setDireccion(new ArrayList<>());
+                usuario.getDireccion().add(direccion);
+            }
+
+            model.addAttribute("usuario", usuario); 
+            return "formulario";
         }
 
-        return "redirect:/Usuario"; 
+        Result result = usuarioDAOImplementation.Add(usuario);
+
+        if (result.correct) {
+            model.addAttribute("success", "Usuario agregado correctamente");
+            return "redirect:/Usuario";
+        } else {
+
+            model.addAttribute("error", "Error al agregar el usuario");
+
+            model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+            model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+            model.addAttribute("usuario", usuario);
+            return "formulario";    
+        }
+
     }
+
+
 
 
 
@@ -212,6 +246,4 @@ public class UsuarioController {
         return result;
     }
 
-
-    
 }

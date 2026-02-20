@@ -2,15 +2,15 @@ package com.digis01.FCruzProgramacionNCapasWebSpring.ML;
 
 public class Municipio {
     
-    private int IdMunicipio;
+    private Integer IdMunicipio;
     private String Nombre;
     public Estado Estado;
     
-    public int getIdMunicipio(){
+    public Integer  getIdMunicipio(){
         return IdMunicipio;
     }
     
-    public void setIdMunicipio(int IdMunicipio){
+    public void setIdMunicipio(Integer IdMunicipio){
         this.IdMunicipio = IdMunicipio;
     }
     

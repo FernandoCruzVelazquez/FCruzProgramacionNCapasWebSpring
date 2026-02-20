@@ -4,17 +4,17 @@ import java.util.List;
 
 
 public class Colonia {
-    private int IdColonia;
+    private Integer IdColonia;
     private String Nombre;
     private String CodigoPostal;
     public Municipio Municipio;
     
     
-    public int getIdColonia(){
+    public Integer  getIdColonia(){
         return IdColonia;
     }
     
-    public void setIdColonia(int IdColonia){
+    public void setIdColonia(Integer IdColonia){
         this.IdColonia = IdColonia;
     }
     

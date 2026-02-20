@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Registro de Usuario</title>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -12,7 +14,7 @@
     <script th:src="@{/js/usuario.js}"></script>
 </head>
 
-<body class="gradient-custom">
+<body class="gradient-custom" th:data-success="${success}" th:data-error="${error}">
 
 <div class="container py-5">
 
@@ -61,8 +63,8 @@
 
                                 <div class="mt-3">
                                     <input type="file"
-                                        id="foto"
-                                        name="foto"
+                                        id="archivoFoto"
+                                        name="archivoFoto"
                                         class="form-control"
                                         accept="image/*">
                                 </div>
@@ -223,15 +225,17 @@
                                     
                                     <div class="col-md-3">
                                         <label for="Estadoddl" class="form-label fw-bold">Estado</label>
-                                        <select id="ddlestado" class="form-select" aria-label="Default select example" th:field="*{direccion[__${iterStat.index}__].colonia.municipio.estado.idEstado}">
-                                            <option th:each="estadoItem : ${estados}" th:value="${estadoItem.idEstado}" th:text="${estadoItem.nombre}" value=0 selected>Selecciona un estado</option>
+                                        <select id="ddlestado" class="form-select" th:field="*{direccion[__${iterStat.index}__].colonia.municipio.estado.idEstado}">
+                                            <option value="" disabled selected>-- Seleccione un estado --</option>
+                                            <option th:each="estadoItem : ${estados}" th:value="${estadoItem.idEstado}" th:text="${estadoItem.nombre}"></option>
                                         </select>
                                     </div>
 
                                     <div class="col-md-3">
                                         <label for="municipioddl" class="form-label fw-bold"  th:field="*{direccion[__${iterStat.index}__].colonia.municipio.idMunicipio}">Municipio</label>
                                         <select id="ddlmunicipio" class="form-select" aria-label="Default select example">
-                                            <option th:each="municipioItem : ${municipios}" th:value="${municipioItem.idMunicipio}" th:text="${municipioItem.nombre}" value=0 selected>Selecciona un municipio</option>
+                                            <option value="" disabled selected>-- Seleccione un municipio --</option>
+                                            <option th:each="municipioItem : ${municipios}" th:value="${municipioItem.idMunicipio}" th:text="${municipioItem.nombre}"></option>
                                         </select>
                                     </div>
                                     
@@ -239,7 +243,8 @@
                                     <div class="col-md-3">
                                         <label for="coloniaddl" class="form-label fw-bold">Colonia</label>
                                         <select id="ddlcolonia" class="form-select " aria-label="Default select example" th:field="*{direccion[__${iterStat.index}__].colonia.idColonia}">
-                                            <option th:each="coloniaItem : ${colonias}" th:value="${coloniaItem.idColonia}" th:text="${coloniaItem.nombre}"value=0 selected>Selecciona una colonia</option>
+                                            <option value="" disabled selected>-- Selecciona una colonia --</option>
+                                            <option th:each="coloniaItem : ${colonias}" th:value="${coloniaItem.idColonia}" th:text="${coloniaItem.nombre}"></option>
                                         </select>
                                     </div>
 
@@ -279,6 +284,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/usuario.js}"></script>
+<script th:src="@{/js/Alert.js}"></script>
 
 </body>
 
