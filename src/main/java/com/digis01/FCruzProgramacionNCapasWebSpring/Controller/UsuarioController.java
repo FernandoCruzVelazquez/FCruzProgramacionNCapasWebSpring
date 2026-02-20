@@ -1,6 +1,7 @@
 package com.digis01.FCruzProgramacionNCapasWebSpring.Controller;
 
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.ColoniaDAOImplementation;
+import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.DireccionDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.EstadoDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.MunicipioDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.PaisDAOImplementation;
@@ -48,6 +49,9 @@ public class UsuarioController {
     private MunicipioDAOImplementation municipioDAOImplementation;
     @Autowired
     private ColoniaDAOImplementation coloniaDAOImplementation;
+    @Autowired
+    private DireccionDAOImplementation direccionDAOImplementation;
+    
     
     
     @GetMapping()          
@@ -71,6 +75,19 @@ public class UsuarioController {
             redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
         } else {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el usuario");
+        }
+
+        return "redirect:/Usuario";
+    }
+    
+    @PostMapping("/GuardarDireccion")
+    public String GuardarDireccion(@ModelAttribute Direccion direccion, RedirectAttributes redirectAttributes) {
+
+        Result result = direccionDAOImplementation.Update(direccion);
+
+        if (result.correct) {redirectAttributes.addFlashAttribute("success","Dirección actualizada correctamente");
+        } else {
+            redirectAttributes.addFlashAttribute("error","Error al actualizar la dirección");
         }
 
         return "redirect:/Usuario";

@@ -141,9 +141,7 @@
                                 <br>
 
                                 <span>
-                                    <span th:text="${direccion.colonia.municipio.IdMunicipio}"></span>,
                                     <span th:text="${direccion.colonia.municipio.nombre}"></span>,
-                                    <span th:text="${direccion.colonia.municipio.estado.IdEstado}"></span>,
                                     <span th:text="${direccion.colonia.municipio.estado.nombre}"></span>,
                                     <span th:text="${direccion.colonia.municipio.estado.pais.nombre}"></span>
                                 </span>
@@ -290,6 +288,7 @@
 
         <div class="modal-footer">
           <button type="submit" class="btn btn-success">Guardar cambios</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         </div>
 
       </form>
@@ -304,7 +303,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
 
-      <form method="post" th:action="@{/Direccion/Guardar}">
+      <form th:action="@{/Usuario/GuardarDireccion}" method="post">
         
         <input type="hidden" name="idUsuario" id="direccionIdUsuario">
         <input type="hidden" name="idDireccion" id="direccionId">
@@ -370,7 +369,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn btn-success">Guardar Cambios</button>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
         </div>
 
