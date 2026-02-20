@@ -9,7 +9,8 @@ public interface IUsuario {
     Result GetAll();
     Result Add(Usuario usuario);
     Result Update(Usuario usuario);
-    Result Delete(int idUsuario);
+    Result Delete(int idUsuario); 
+    
     Result GetById(int idUsuario);
     
     Result UpdateFoto(int idUsuario, String foto);

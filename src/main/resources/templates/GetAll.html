@@ -65,13 +65,14 @@
                                 th:data-sexo="${usuario.sexo}"
                                 th:data-curp="${usuario.CURP}"
 
-
                                 onclick="cargarUsuario(this)">
                                 <i class="bi bi-pencil-square"></i>
                         </button>
 
-                        <button class="btn btn-danger btn-sm">
-                            <i class="bi bi-trash"></i>
+                        <button type="button"
+                                class="btn btn-sm btn-danger"
+                                th:onclick="'confirmarEliminacionUsuario(' + ${usuario.idUsuario} + ')'">
+                                <i class="bi bi-trash"></i>
                         </button>
                         
                     </td>
@@ -169,10 +170,11 @@
                                       <i class="bi bi-pencil-square"></i>
                                   </button>
 
-                                  <button class="btn btn-danger btn-sm">
-                                      <i class="bi bi-trash"></i>
-                                  </button>
-
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger"
+                                            th:onclick="'confirmarEliminacionDireccion(' + ${direccion.idDireccion} + ')'">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
 
                                 </div>
 

@@ -22,8 +22,7 @@ public class DireccionDAOImplementation implements IDireccion {
 
         try {
 
-            jdbcTemplate.update(
-                "CALL DireccionUpdateSP(?,?,?,?,?)",
+            jdbcTemplate.update("CALL DireccionUpdateSP(?,?,?,?,?)",
 
                 direccion.getIdDireccion(),
                 direccion.getCalle(),
@@ -42,4 +41,26 @@ public class DireccionDAOImplementation implements IDireccion {
 
         return result;
     }
+    
+    @Override
+    public Result DeleteDireccion(int idDireccion) {
+
+        Result result = new Result();
+
+        try {
+
+            jdbcTemplate.update("CALL DireccionDeleteSP(?)", idDireccion);
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+        }
+
+        return result;
+    }
+    
+    
 }

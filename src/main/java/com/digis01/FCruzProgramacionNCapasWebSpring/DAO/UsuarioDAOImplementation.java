@@ -228,8 +228,25 @@ public class UsuarioDAOImplementation implements IUsuario {
 
     @Override
     public Result Delete(int idUsuario) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
+        Result result = new Result();
+
+        try {
+
+            JdbcTemplate.update("CALL UsuarioDeleteSP(?)", idUsuario);
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+        }
+
+        return result;
     }
+    
+    
 
     @Override
     public Result GetById(int idUsuario) {

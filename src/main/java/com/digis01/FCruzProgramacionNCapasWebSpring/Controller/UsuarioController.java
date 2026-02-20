@@ -127,6 +127,33 @@ public class UsuarioController {
 
         return "redirect:/Usuario";
     }
+    
+    @PostMapping("/delete")
+    public String eliminarUsuario(@RequestParam("idUsuario") int idUsuario, RedirectAttributes redirectAttributes) {
+
+        Result result = usuarioDAOImplementation.Delete(idUsuario);
+
+        redirectAttributes.addFlashAttribute("success",
+                "Usuario eliminado correctamente");
+
+        return "redirect:/Usuario";
+    }
+    
+    @PostMapping("/Direccion/delete")
+    public String eliminarDireccion(@RequestParam("idDireccion") int idDireccion, RedirectAttributes redirectAttributes) {
+
+        Result result = direccionDAOImplementation.DeleteDireccion(idDireccion);
+
+        if (result.correct) {
+            redirectAttributes.addFlashAttribute("success",
+                    "Dirección eliminada correctamente");
+        } else {
+            redirectAttributes.addFlashAttribute("error",
+                    "Error al eliminar la dirección");
+        }
+
+        return "redirect:/Usuario";
+    }
 
 
     

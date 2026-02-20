@@ -196,10 +196,10 @@
                                 Direcciones
                             </div>
 
-                            <div class="card-body bg-warning">
+                            <div class="card-body bg-warning" id="contenedorDirecciones">
 
                                 <div th:each="direccion, iterStat : *{direccion}" 
-                                    class="row g-3 mb-4 pb-3 border-bottom">
+                                     class="row g-3 mb-4 pb-3 border-bottom direccion-item">
                                     
 
                                     <div class="col-md-4">
@@ -261,10 +261,6 @@
 
                                     
                                 </div>
-
-                                <button type="button" class="btn btn-primary">
-                                    + Agregar Dirección
-                                </button>
 
                             </div>
                         </div>
