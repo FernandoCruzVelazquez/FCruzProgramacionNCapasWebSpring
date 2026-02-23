@@ -18,19 +18,20 @@
 
 <div class="container py-5">
 
-    <div class="col-sm-4">
-        <a class="btn btn-warning" th:href="@{/Usuario}">
-            <i class="bi bi-arrow-return-left"></i>
-        </a>
-    </div>
 
     <div class="row justify-content-center">
         <div class="col-lg-10 col-md-12">
 
+            <div class="col-12 mb-3 text-end">
+                <a th:href="@{/Usuario}" class="btn btn-outline-light btn-sm rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-arrow-left me-2"></i>Regresar
+                </a>
+            </div>
+
             <div class="card shadow-lg rounded-4 border-0 bg-light  ">
                 <div class="card-header bg-primary text-white text-center fw-bold py-3 rounded-top-4">
                     <h4 class="mb-0">Registro de Usuario</h4>
-                    <small class="opacity-75">Complete la información requerida</small>
+                    <small class="opacity-75">Complete la información requerida</small>   
                 </div>
 
                 <div class="card-body p-4">
@@ -38,8 +39,8 @@
                     <form method="post" th:object="${usuario}" th:action="@{/Usuario/form}" enctype="multipart/form-data">
 
                     
-                        <h5 class="text-white border-bottom pb-2 mb-3">
-                            Datos personales
+                        <h5 class="text-dark border-bottom border-primary pb-2 mb-3">
+                            <i class="bi bi-person-fill me-2"></i>Datos personales
                         </h5>
 
                         <div class="row g-3">
@@ -196,7 +197,7 @@
                                 Direcciones
                             </div>
 
-                            <div class="card-body bg-warning" id="contenedorDirecciones">
+                            <div class="card-body bg-white" id="contenedorDirecciones">
 
                                 <div th:each="direccion, iterStat : *{direccion}" 
                                      class="row g-3 mb-4 pb-3 border-bottom direccion-item">
@@ -266,11 +267,11 @@
                         </div>
 
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-success px-4 me-2">
-                                Guardar
+                            <button type="submit" class="btn btn-success rounded-pill px-5 me-2">
+                                <i class="bi bi-check-circle me-2"></i>Guardar
                             </button>
-                            <button type="reset" class="btn btn-outline-danger px-4">
-                                Eliminar
+                            <button type="reset" class="btn btn-outline-danger rounded-pill px-5">
+                                <i class="bi bi-trash me-2"></i>Limpiar
                             </button>
                         </div>
 

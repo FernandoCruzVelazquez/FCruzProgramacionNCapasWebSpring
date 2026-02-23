@@ -255,12 +255,96 @@ public class UsuarioController {
         }
 
     }
-
-
-
-
-
     
+    @GetMapping("/Detalle")
+    public String detalleUsuario(@RequestParam("id") int idUsuario, Model model) {
+
+        Usuario usuario = new Usuario();
+        
+        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+        model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+
+
+        Result result = usuarioDAOImplementation.GetAll();
+
+        if (result.objects != null) {
+            for (Object obj : result.objects) {
+                Usuario u = (Usuario) obj;
+                if (u.getIdUsuario() == idUsuario) {
+                    usuario = u;
+                    break;
+                }
+            }
+        }
+
+        model.addAttribute("usuario", usuario);
+
+        return "UsuarioDetalle";
+    }
+
+    @PostMapping("/DetalleUpdate")
+    public String DetalleUpdate(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {      
+
+        Result result = usuarioDAOImplementation.Update(usuario);
+
+        if (result.correct) {
+            redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar el usuario");
+        }
+
+        return "redirect:/Usuario/Detalle?id=" + usuario.getIdUsuario();
+    }
+    
+    @PostMapping("/DetalleGuardarDireccion")
+    public String DetalleGuardarDireccion(@ModelAttribute Direccion direccion, RedirectAttributes redirectAttributes) {
+
+        Result result = direccionDAOImplementation.Update(direccion);
+
+        if (result.correct) {redirectAttributes.addFlashAttribute("success","Dirección actualizada correctamente");
+        } else {
+            redirectAttributes.addFlashAttribute("error","Error al actualizar la dirección");
+        }
+
+        return "redirect:/Usuario/Detalle?id=" + direccion.getIdUsuario();
+    }
+    
+    @PostMapping("/DetalleActualizarFoto")
+    public String DetalleActualizarFoto(@RequestParam("idUsuario") int idUsuario, @RequestParam("archivoFoto") MultipartFile foto, RedirectAttributes redirectAttributes) {
+
+        try {
+
+            if (!foto.isEmpty()) {
+
+                String tipo = foto.getContentType();
+
+                if ("image/jpeg".equals(tipo) || "image/png".equals(tipo)) {
+
+                    byte[] bytes = foto.getBytes();
+                    String base64 = Base64.getEncoder().encodeToString(bytes);
+                    String imagenFinal = "data:" + tipo + ";base64," + base64;
+
+                    Result result = usuarioDAOImplementation.UpdateFoto(idUsuario, imagenFinal);
+
+                    if (result.correct) {
+                        redirectAttributes.addFlashAttribute("success", "Foto actualizada correctamente");
+                    } else {
+                        redirectAttributes.addFlashAttribute("error", "Error al actualizar la foto");
+                    }
+
+                } else {
+                    redirectAttributes.addFlashAttribute("error", "Solo JPG o PNG");
+                }
+            }
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al procesar la imagen");
+        }
+
+        return "redirect:/Usuario/Detalle?id=" + idUsuario;
+    }
+
+
     @GetMapping("Formulario")
     public String formUsuaFormulariorio(
             @RequestParam(required = false) Integer id,

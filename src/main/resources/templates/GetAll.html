@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Fernando Cruz</title>
+    <title>GetAll</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -17,20 +17,21 @@
 
 <div class="container mt-4">
 
-        <div class="row mb-3 align-items-center">
-                <div class="col-sm-8 text-center">
-            <h2 class="fw-bold text-white mb-2">
-                Nuevo Usuario
-            </h2>
-            <p class="text-white-50 mb-0">
-                Registra un nuevo usuario en el sistema
-            </p>
-        </div>
+        <div class="row mb-4 align-items-center bg-dark bg-opacity-25 py-4 rounded-4 shadow-sm border border-secondary border-opacity-25">
+            <div class="col-sm-8 text-start ps-4"> <h2 class="fw-bold text-white mb-1">
+                    <i class="bi bi-people-fill me-2"></i>Gestión de Usuarios
+                </h2>
+                <p class="text-white-50 mb-0">
+                    Administra o registra nuevos usuarios
+                </p>
+            </div>
 
-        <div class="col-sm-4 text-center">
-            <a class="btn btn-success" th:href="@{/Usuario/form}">Agregar</a>
+            <div class="col-sm-4 text-center text-sm-end pe-sm-4">
+                <a class="btn btn-success btn-lg rounded-pill px-4 shadow-lg btn-nuevo-usuario" th:href="@{/Usuario/form}">
+                    <i class="bi bi-person-plus-fill me-2"></i>Agregar Usuario
+                </a>
+            </div>
         </div>
-    </div>
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover align-middle text-center">
@@ -47,7 +48,7 @@
                 <tr th:each="usuario : ${usuarios}">
 
                     <td>
-                        <button class="btn btn-warning"
+                        <button class="btn btn-sm btn-warning"
                                 data-bs-toggle="modal"
                                 data-bs-target="#modalEditar"
 
@@ -74,49 +75,55 @@
                                 th:onclick="'confirmarEliminacionUsuario(' + ${usuario.idUsuario} + ')'">
                                 <i class="bi bi-trash"></i>
                         </button>
+
+                        <a th:href="@{/Usuario/Detalle(id=${usuario.idUsuario})}"
+                          class="btn btn-sm btn-primary">
+                            <i class="bi bi-info-circle"></i>
+                        </a>
                         
                     </td>
 
                     <td class="text-start">
                         <strong th:text="|${usuario.nombre} ${usuario.apellidoPaterno} ${usuario.apellidosMaterno}|"></strong><br>
-                        <span>📅Fec. Nacimiento: <span th:text="${#dates.format(usuario.fechaNacimiento, 'dd/MM/yyyy')}"></span></span><br>
-                        <span>👥Sexo: <span th:text="${usuario.sexo}"></span></span><br>
-                        <span>💳CURP: <span th:text="${usuario.CURP}"></span></span><br>
+                        <span><i class="bi bi-calendar3 me-1"></i> Fec. Nacimiento: <span th:text="${#dates.format(usuario.fechaNacimiento, 'dd/MM/yyyy')}"></span></span><br>
+                        <span><i class="bi bi-gender-ambiguous me-1"></i> Sexo: <span th:text="${usuario.sexo}"></span></span><br>
+                        <span><i class="bi bi-credit-card-2-front"></i> CURP: <span th:text="${usuario.CURP}"></span></span><br>
                         <span th:if="${usuario.Rol != null and usuario.Rol.NombreRol != null and !#strings.isEmpty(usuario.Rol.NombreRol)}">Role: <span th:text="${usuario.Rol.NombreRol}"></span></span>
                     </td>
 
-                    <td class="text-start">
-                        <div class="position-relative d-inline-block overflow-hidden rounded-circle"
-                            style="width:150px; height:150px;">
+                    <td class="text-center align-middle">
+    
+                        <div class="profile-img-container mx-auto" style="width:150px; height:150px;">
 
-                            <img id="previewFoto"
-                                th:if="*{usuario.foto != null}"
-                                th:src="*{usuario.foto}"
-                                class="w-100 h-100"
+                            <!-- Imagen -->
+                            <img th:if="${usuario.foto != null}"
+                                th:src="${usuario.foto}"
+                                class="rounded-circle shadow border border-5 border-white w-100 h-100"
                                 style="object-fit:cover;">
 
-                            <div id="iconoDefault"
-                                th:if="*{usuario.foto == null}"
-                                class="d-flex align-items-center justify-content-center w-100 h-100"
-                                style="background-color:#f8f9fa;">
-                                <i class="bi bi-person-bounding-box" style="font-size:80px; color:#6c757d;"></i>
+                            <!-- Placeholder -->
+                            <div th:if="${usuario.foto == null}"
+                                class="profile-placeholder d-flex align-items-center justify-content-center bg-dark rounded-circle shadow-lg w-100 h-100">
+                                <i class="bi bi-person-fill text-white" style="font-size:60px;"></i>
                             </div>
 
+                            <!-- Botón cámara -->
+                            <button class="btn btn-success btn-edit-photo"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalFoto"
+                                    th:data-id="${usuario.idUsuario}"
+                                    onclick="cargarIdUsuarioFoto(this)">
+                                <i class="bi bi-camera-fill"></i>
+                            </button>
+
                         </div>
-                        <button type="button"
-                                class="btn btn-success btn-sm me-1"
-                                data-bs-toggle="modal"
-                                data-bs-target="#modalFoto"
-                                th:data-id="${usuario.idUsuario}"
-                                onclick="cargarIdUsuarioFoto(this)">
-                            <i class="bi bi-camera"></i>
-                        </button>
+
                     </td>
 
                     <td class="text-start">
-                        <span>📞Tel: <span th:text="${usuario.telefono}"></span></span><br>
-                        <span>📱Cel: <span th:text="${usuario.celular}"></span></span><br>
-                        <span>📩Email: <span th:text="${usuario.email}"></span></span><br>
+                        <span><i class="bi bi-telephone fs-4 text-info me-3"></i>Tel: <span th:text="${usuario.telefono}"></span></span><br>
+                        <span><i class="bi bi-phone fs-4 text-success me-3"></i>Cel: <span th:text="${usuario.celular}"></span></span><br>
+                        <span><i class="bi bi-envelope-at fs-4 text-primary me-3"></i>Email: <span th:text="${usuario.email}"></span></span><br>
                         <span>👤Username: <span th:text="${usuario.userName}"></span></span><br>
                     </td>
 
@@ -126,11 +133,13 @@
                         </div>
 
                         <div th:each="direccion : ${usuario.direccion}" 
-                            class="card mb-2 shadow-sm border-0">
+                            class="card mb-2 shadow-sm border-0 direccion-card">
 
                             <div class="card-body p-2 small">
+                              
 
-                                <strong th:text="${direccion.calle}"></strong><br>
+                                <i class="bi bi-geo-alt-fill text-danger me-2"></i><strong th:text="${direccion.calle}"></strong><br>
+                                
 
                                 <span>
                                     No. Ext: <span th:text="${direccion.numeroExterior}"></span>,
