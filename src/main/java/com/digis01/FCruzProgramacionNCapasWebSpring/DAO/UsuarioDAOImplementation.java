@@ -296,33 +296,39 @@ public class UsuarioDAOImplementation implements IUsuario {
         Result result = new Result();
 
         try {
-            JdbcTemplate.execute("{CALL BuscarUsuariosSP(?, ?, ?, ?, ?)}", (CallableStatementCallback<Boolean>) callableStament -> {
+            result.objects = JdbcTemplate.execute("{CALL BuscarUsuariosSP(?, ?, ?, ?, ?)}", (CallableStatementCallback<ArrayList<Object>>) callableStament -> {
 
-                callableStament.setString(1, (usuarioBusqueda.getNombre() == null || usuarioBusqueda.getNombre().isEmpty()) ? null : usuarioBusqueda.getNombre());
-                callableStament.setString(2, (usuarioBusqueda.getApellidoPaterno() == null || usuarioBusqueda.getApellidoPaterno().isEmpty()) ? null : usuarioBusqueda.getApellidoPaterno());
-                callableStament.setString(3, (usuarioBusqueda.getApellidosMaterno() == null || usuarioBusqueda.getApellidosMaterno().isEmpty()) ? null : usuarioBusqueda.getApellidosMaterno());
+                callableStament.setString(1, (usuarioBusqueda.getNombre() == null || usuarioBusqueda.getNombre().trim().isEmpty()) ? null : usuarioBusqueda.getNombre());
+                callableStament.setString(2, (usuarioBusqueda.getApellidoPaterno() == null || usuarioBusqueda.getApellidoPaterno().trim().isEmpty()) ? null : usuarioBusqueda.getApellidoPaterno());
+                callableStament.setString(3, (usuarioBusqueda.getApellidosMaterno() == null || usuarioBusqueda.getApellidosMaterno().trim().isEmpty()) ? null : usuarioBusqueda.getApellidosMaterno());
 
-                if (usuarioBusqueda.getRol() != null && usuarioBusqueda.getRol().getIdRol() > 0) {
-                    callableStament.setInt(4, usuarioBusqueda.getRol().getIdRol());
+                if (usuarioBusqueda.getRol() != null && usuarioBusqueda.getRol().getIdRol() != null) {
+
+                    if (usuarioBusqueda.getRol().getIdRol() > 0) {
+                        callableStament.setInt(4, usuarioBusqueda.getRol().getIdRol());
+                    } else {
+                        callableStament.setNull(4, java.sql.Types.NUMERIC);
+                    }
+
                 } else {
-                    callableStament.setNull(4, java.sql.Types.INTEGER);
+                    callableStament.setNull(4, java.sql.Types.NUMERIC);
                 }
 
                 callableStament.registerOutParameter(5, java.sql.Types.REF_CURSOR);
 
                 callableStament.execute();
 
-                ResultSet resultSet = (ResultSet) callableStament.getObject(5);
-
-                result.objects = mapResultSetToUsuarios(resultSet);
-                result.correct = true;
-
-                return true;
+                try (ResultSet resultSet = (ResultSet) callableStament.getObject(5)) {
+                    return mapResultSetToUsuarios(resultSet);
+                }
             });
+
+            result.correct = true;
+
         } catch (Exception ex) {
             result.correct = false;
-            result.errorMessage = ex.getMessage();
-            result.ex = ex;
+            result.errorMessage = "Error en DAO: " + ex.getMessage();
+            ex.printStackTrace();
         }
 
         return result;

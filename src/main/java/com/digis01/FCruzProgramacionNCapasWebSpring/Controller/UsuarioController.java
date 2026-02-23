@@ -83,12 +83,6 @@ public class UsuarioController {
         model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
         model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
         
-        if(usuario.getRol() != null) {
-            System.out.println("ID Rol recibido: " + usuario.getRol().getIdRol());
-        } else {
-            System.out.println("El objeto Rol llegó nulo");
-        }
-        
         return "GetAll"; 
     }
     
