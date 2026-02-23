@@ -17,21 +17,82 @@
 
 <div class="container mt-4">
 
-        <div class="row mb-4 align-items-center bg-dark bg-opacity-25 py-4 rounded-4 shadow-sm border border-secondary border-opacity-25">
-            <div class="col-sm-8 text-start ps-4"> <h2 class="fw-bold text-white mb-1">
-                    <i class="bi bi-people-fill me-2"></i>Gestión de Usuarios
-                </h2>
-                <p class="text-white-50 mb-0">
-                    Administra o registra nuevos usuarios
-                </p>
-            </div>
+    <div class="row mb-4 align-items-center bg-dark bg-opacity-25 py-4 rounded-4 shadow-sm border border-secondary border-opacity-25">
+        <div class="col-sm-8 text-start ps-4"> 
+            <h2 class="fw-bold text-white mb-1">
+                <i class="bi bi-people-fill me-2"></i>Gestión de Usuarios
+            </h2>
+            <p class="text-white-50 mb-0">
+                Administra o registra nuevos usuarios
+            </p>
+        </div>
+        
+        <div class="col-sm-4 d-flex align-items-center justify-content-center justify-content-sm-end pe-sm-4 gap-3">
+            
+            <a class="btn btn-success btn-lg rounded-pill px-4 shadow-lg btn-nuevo-usuario" th:href="@{/Usuario/form}">
+                <i class="bi bi-person-plus-fill me-2"></i>Agregar Usuario
+            </a>
 
-            <div class="col-sm-4 text-center text-sm-end pe-sm-4">
-                <a class="btn btn-success btn-lg rounded-pill px-4 shadow-lg btn-nuevo-usuario" th:href="@{/Usuario/form}">
-                    <i class="bi bi-person-plus-fill me-2"></i>Agregar Usuario
-                </a>
+            <button class="icon-button" data-bs-toggle="modal" data-bs-target="#modalBuscar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-dark bg-opacity-10 border-secondary border-opacity-25 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <form th:action="@{/Usuario/GetByFilter}" th:object="${usuario}" method="post" class="row g-3 align-items-end">
+                        
+                        <div class="col-md-3">
+                            <label class="form-label text-white fw-bold small"><i class="bi bi-person me-1"></i>Nombre</label>
+                            <input type="text" name="nombre" class="form-control form-control-sm rounded-pill" 
+                                  placeholder="Buscar por nombre..." th:value="${param.nombre}">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-white fw-bold small">Apellido Paterno</label>
+                            <input type="text" name="apellidoPaterno" class="form-control form-control-sm rounded-pill" 
+                                  placeholder="Paterno" th:value="${param.apellidoPaterno}">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label text-white fw-bold small">Apellido Materno</label>
+                            <input type="text" name="apellidosMaterno" class="form-control form-control-sm rounded-pill" 
+                                  placeholder="Materno" th:value="${param.apellidosMaterno}">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label text-white fw-bold small"><i class="bi bi-shield-lock me-1"></i>Rol</label>
+                            <select class="form-select form-select-sm rounded-pill" name="Rol.idRol">
+                                <option value="">-- Todos los Roles --</option>
+                                <option th:each="rol : ${roles}" 
+                                        th:value="${rol.idRol}" 
+                                        th:text="${rol.nombreRol}"
+                                        th:selected="${param.idRol != null and param.idRol[0] == rol.idRol.toString()}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm rounded-pill flex-grow-1 shadow-sm">
+                                <i class="bi bi-filter"></i> Filtrar
+                            </button>
+                            <a th:href="@{/Usuario}" class="btn btn-outline-light btn-sm rounded-pill flex-grow-1">
+                                <i class="bi bi-arrow-clockwise"></i> Limpiar
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
+        
 
     <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover align-middle text-center">
@@ -376,8 +437,9 @@
 
             <div class="col-md-4">
                 <label class="form-label fw-bold">C.P.</label>
-                <input type="text" class="form-control bg-light" name="codigoPostal" id="direccionCP" readonly>
+                <input type="text" class="form-control" name="codigoPostal" id="direccionCP" readonly>
             </div>
+
 
           </div>
         </div>
@@ -437,6 +499,50 @@
 
     </div>
   </div>
+</div>
+
+<div class="modal fade" id="modalBuscar" tabindex="-1">
+    <div class="modal-dialog modal-lg"> <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title"><i class="bi bi-search me-2"></i>Buscar Usuario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-4">
+                    <span class="input-group-text">ID Usuario</span>
+                    <input type="number" id="txtIdBuscar" class="form-control" placeholder="Ej. 10">
+                    <button class="btn btn-primary" type="button" onclick="ejecutarBusqueda()">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+
+                <div id="cardResultado" style="display: none;" class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h6 class="card-title fw-bold text-primary mb-0" id="resNombre"></h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-4"> 
+                            <div>
+                                <strong><i class="bi bi-envelope text-muted"></i> Email:</strong> 
+                                <span id="resEmail"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-telephone text-muted"></i> Teléfono:</strong> 
+                                <span id="resTelefono"></span>
+                            </div>
+                            <div>
+                                <strong><i class="bi bi-celular text-muted"></i> Celular:</strong> 
+                                <span id="resCelular"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a id="lnkDetalle" href="#" class="btn btn-outline-primary w-100">Ver Perfil Completo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script th:src="@{/js/Modal.js}"></script>

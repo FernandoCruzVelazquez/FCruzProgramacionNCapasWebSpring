@@ -12,6 +12,7 @@ public interface IUsuario {
     Result Delete(int idUsuario); 
     
     Result GetById(int idUsuario);
+    Result GetByFilter(Usuario usuario);
     
     Result UpdateFoto(int idUsuario, String foto);
     

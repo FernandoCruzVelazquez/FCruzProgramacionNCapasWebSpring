@@ -192,3 +192,46 @@ document.getElementById('modalFoto').addEventListener('hidden.bs.modal', functio
 
 });
 
+
+function ejecutarBusqueda() {
+    let id = $('#txtIdBuscar').val();
+    
+    if (id === "") {
+        Swal.fire('Atención', 'Ingresa un ID', 'warning');
+        return;
+    }
+
+    $.ajax({
+        url: "/Usuario/GetById/" + id,
+        type: "GET",
+        success: function(result) {
+            // ... dentro del success de tu AJAX
+            if (result.correct) {
+                let u = result.object; 
+                $('#cardResultado').fadeIn();
+                
+                $('#resNombre').text(u.nombre + " " + u.apellidoPaterno + " " + (u.apellidoMaterno || ""));
+                $('#resEmail').text(u.email);
+                $('#resRol').text(u.rol ? u.rol.nombreRol : "Sin rol");
+                $('#resTelefono').text(u.telefono || "N/A");
+                $('#resCelular').text(u.celular || "N/A");
+                $('#resCurp').text(u.curp || "N/A");
+
+
+                if (u.direccion) {
+                    let d = u.direccion;
+                    let direccionCompleta = `${d.calle} #${d.numeroExterior}, CP: ${d.codigoPostal}, ${d.municipio.nombre}, ${d.municipio.estado.nombre}`;
+                    $('#resDireccion').text(direccionCompleta);
+                } else {
+                    $('#resDireccion').text("Dirección no registrada");
+                }
+
+                $('#lnkDetalle').attr('href', '/Usuario/Detalle?id=' + u.idUsuario);
+            }
+        },
+        error: function() {
+            Swal.fire('Error', 'Error en el servidor al buscar', 'error');
+        }
+    });
+}
+

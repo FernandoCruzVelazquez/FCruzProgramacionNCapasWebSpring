@@ -250,9 +250,154 @@ public class UsuarioDAOImplementation implements IUsuario {
 
     @Override
     public Result GetById(int idUsuario) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Result result = new Result();
+        try {
+            JdbcTemplate.execute("{CALL UsuarioGetByIdSP(?, ?)}", (CallableStatementCallback<Boolean>) callableStament -> {
+                callableStament.setInt(1, idUsuario);
+                callableStament.registerOutParameter(2, java.sql.Types.REF_CURSOR);
+                callableStament.execute();
+
+                ResultSet rs = (ResultSet) callableStament.getObject(2);
+                if (rs.next()) {
+                    Usuario usuario = new Usuario();
+                    usuario.setIdUsuario(rs.getInt("IdUsuario"));
+                    usuario.setNombre(rs.getString("Nombreusuario"));
+                    usuario.setApellidoPaterno(rs.getString("ApellidoPaterno"));
+                    usuario.setApellidosMaterno(rs.getString("ApellidosMaterno"));
+                    usuario.setUserName(rs.getString("Username"));
+                    usuario.setEmail(rs.getString("Email"));
+                    usuario.setSexo(rs.getString("Sexo"));
+                    usuario.setCURP(rs.getString("CURP"));
+                    usuario.setTelefono(rs.getString("Telefono"));
+                    usuario.setCelular(rs.getString("Celular"));
+
+                    Rol rol = new Rol();
+                    rol.setIdRol(rs.getInt("idrol"));
+                    rol.setNombreRol(rs.getString("NombreROl"));
+                    usuario.setRol(rol);
+
+                    result.object = usuario; // Guardamos el usuario encontrado
+                    result.correct = true;
+                } else {
+                    result.correct = false;
+                    result.errorMessage = "No se encontró el usuario";
+                }
+                return true;
+            });
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+        }
+        return result;
+    }
+    
+    @Override
+    public Result GetByFilter(Usuario usuarioBusqueda) {
+        Result result = new Result();
+
+        try {
+            JdbcTemplate.execute("{CALL BuscarUsuariosSP(?, ?, ?, ?, ?)}", (CallableStatementCallback<Boolean>) callableStament -> {
+
+                callableStament.setString(1, (usuarioBusqueda.getNombre() == null || usuarioBusqueda.getNombre().isEmpty()) ? null : usuarioBusqueda.getNombre());
+                callableStament.setString(2, (usuarioBusqueda.getApellidoPaterno() == null || usuarioBusqueda.getApellidoPaterno().isEmpty()) ? null : usuarioBusqueda.getApellidoPaterno());
+                callableStament.setString(3, (usuarioBusqueda.getApellidosMaterno() == null || usuarioBusqueda.getApellidosMaterno().isEmpty()) ? null : usuarioBusqueda.getApellidosMaterno());
+
+                if (usuarioBusqueda.getRol() != null && usuarioBusqueda.getRol().getIdRol() > 0) {
+                    callableStament.setInt(4, usuarioBusqueda.getRol().getIdRol());
+                } else {
+                    callableStament.setNull(4, java.sql.Types.INTEGER);
+                }
+
+                callableStament.registerOutParameter(5, java.sql.Types.REF_CURSOR);
+
+                callableStament.execute();
+
+                ResultSet resultSet = (ResultSet) callableStament.getObject(5);
+
+                result.objects = mapResultSetToUsuarios(resultSet);
+                result.correct = true;
+
+                return true;
+            });
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+            result.ex = ex;
+        }
+
+        return result;
     }
 
+    private ArrayList<Object> mapResultSetToUsuarios(ResultSet resultSet) throws java.sql.SQLException {
+        ArrayList<Object> usuarios = new ArrayList<>();
+
+        while (resultSet.next()) {
+            int idUsuarioActual = resultSet.getInt("IdUsuario");
+
+            if (!usuarios.isEmpty() && idUsuarioActual == ((Usuario) usuarios.get(usuarios.size() - 1)).getIdUsuario()) {
+
+                Usuario usuarioExistente = (Usuario) usuarios.get(usuarios.size() - 1);
+                usuarioExistente.getDireccion().add(crearDireccionDesdeRS(resultSet));
+
+            } else {
+                Usuario usuario = new Usuario();
+                usuario.setIdUsuario(idUsuarioActual);
+                usuario.setNombre(resultSet.getString("NombreUsuario"));
+                usuario.setApellidoPaterno(resultSet.getString("ApellidoPaterno"));
+                usuario.setApellidosMaterno(resultSet.getString("ApellidosMaterno"));
+                usuario.setUserName(resultSet.getString("UserName"));
+                usuario.setEmail(resultSet.getString("Email"));
+                usuario.setSexo(resultSet.getString("Sexo"));
+                usuario.setCURP(resultSet.getString("CURP"));
+                usuario.setTelefono(resultSet.getString("Telefono"));
+                usuario.setCelular(resultSet.getString("Celular"));
+                usuario.setFechaNacimiento(resultSet.getDate("FechaNacimiento"));
+                usuario.setFoto(resultSet.getString("Foto"));
+
+                usuario.Rol = new Rol();
+                usuario.Rol.setIdRol(resultSet.getInt("IdRol"));
+                usuario.Rol.setNombreRol(resultSet.getString("NombreRol"));
+
+                usuario.setDireccion(new ArrayList<>());
+                usuario.getDireccion().add(crearDireccionDesdeRS(resultSet));
+
+                usuarios.add(usuario);
+            }
+        }
+        return usuarios;
+    }
+
+    private Direccion crearDireccionDesdeRS(ResultSet rs) throws java.sql.SQLException {
+        Direccion direccion = new Direccion();
+        direccion.setIdDireccion(rs.getInt("IdDireccion"));
+        direccion.setCalle(rs.getString("Calle"));
+        direccion.setNumeroExterior(rs.getString("NumeroExterior"));
+        direccion.setNumeroIInteriori(rs.getString("NumeroIInteriori"));
+
+        Colonia colonia = new Colonia();
+        colonia.setIdColonia(rs.getInt("IdColonia"));
+        colonia.setNombre(rs.getString("NombreColonia"));
+        colonia.setCodigoPostal(rs.getString("CodigoPostal"));
+
+        Municipio municipio = new Municipio();
+        municipio.setIdMunicipio(rs.getInt("IdMunicipio"));
+        municipio.setNombre(rs.getString("NombreMunicipio"));
+
+        Estado estado = new Estado();
+        estado.setIdEstado(rs.getInt("IdEstado"));
+        estado.setNombre(rs.getString("NombreEstado"));
+
+        Pais pais = new Pais();
+        pais.setIdPais(rs.getInt("IdPais"));
+        pais.setNombre(rs.getString("NombrePais"));
+
+        estado.setPais(pais);
+        municipio.setEstado(estado);
+        colonia.setMunicipio(municipio);
+        direccion.setColonia(colonia);
+
+        return direccion;
+    }
 
 
 }

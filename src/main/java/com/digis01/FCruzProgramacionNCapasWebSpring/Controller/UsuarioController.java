@@ -66,6 +66,32 @@ public class UsuarioController {
         return "GetAll";
     } 
     
+    @GetMapping("/GetById/{id}")
+    @ResponseBody
+    public Result getByIdJSON(@PathVariable("id") int id) {
+        Result result = usuarioDAOImplementation.GetById(id);
+        return result;
+    }
+    
+    @PostMapping("/GetByFilter")
+    public String getByFilter(Usuario usuario, Model model) {
+        
+        Result result = usuarioDAOImplementation.GetByFilter(usuario);
+        model.addAttribute("usuarios", result.objects);
+
+        
+        model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
+        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+        
+        if(usuario.getRol() != null) {
+            System.out.println("ID Rol recibido: " + usuario.getRol().getIdRol());
+        } else {
+            System.out.println("El objeto Rol llegó nulo");
+        }
+        
+        return "GetAll"; 
+    }
+    
     @PostMapping("/update")
     public String Update(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {      
 
