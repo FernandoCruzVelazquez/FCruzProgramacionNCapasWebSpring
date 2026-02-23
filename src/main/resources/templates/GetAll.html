@@ -156,19 +156,16 @@
     
                         <div class="profile-img-container mx-auto" style="width:150px; height:150px;">
 
-                            <!-- Imagen -->
                             <img th:if="${usuario.foto != null}"
                                 th:src="${usuario.foto}"
                                 class="rounded-circle shadow border border-5 border-white w-100 h-100"
                                 style="object-fit:cover;">
 
-                            <!-- Placeholder -->
                             <div th:if="${usuario.foto == null}"
                                 class="profile-placeholder d-flex align-items-center justify-content-center bg-dark rounded-circle shadow-lg w-100 h-100">
                                 <i class="bi bi-person-fill text-white" style="font-size:60px;"></i>
                             </div>
 
-                            <!-- Botón cámara -->
                             <button class="btn btn-success btn-edit-photo"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalFoto"
