@@ -259,13 +259,12 @@ public class UsuarioController {
 
         List<Usuario> usuarios = new ArrayList<>();
 
-        try (BufferedReader br = new BufferedReader(
-                new FileReader(file))) {
+        try (BufferedReader bufferedReader = new BufferedReader( new FileReader(file))) {
 
             String linea;
             int numeroLinea = 1;
 
-            while ((linea = br.readLine()) != null) {
+            while ((linea = bufferedReader.readLine()) != null) {
 
                 if (linea.trim().isEmpty()) {
                     numeroLinea++;
@@ -358,7 +357,6 @@ public class UsuarioController {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                 usuario.setFechaNacimiento(sdf.parse(fechaTexto));
 
-                // ESTA ES LA PARTE IMPORTANTE
                 usuario.setTelefono(formatter.formatCellValue(row.getCell(5)).trim());
                 usuario.setCelular(formatter.formatCellValue(row.getCell(6)).trim());
 
