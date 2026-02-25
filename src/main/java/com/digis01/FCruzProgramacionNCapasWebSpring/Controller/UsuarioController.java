@@ -354,7 +354,7 @@ public class UsuarioController {
                 usuario.setEmail(formatter.formatCellValue(row.getCell(3)).trim());
 
                 String fechaTexto = formatter.formatCellValue(row.getCell(4)).trim();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 usuario.setFechaNacimiento(sdf.parse(fechaTexto));
 
                 usuario.setTelefono(formatter.formatCellValue(row.getCell(5)).trim());
