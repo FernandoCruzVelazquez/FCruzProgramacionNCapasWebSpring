@@ -353,9 +353,22 @@ public class UsuarioController {
                 usuario.setApellidosMaterno(formatter.formatCellValue(row.getCell(2)).trim());
                 usuario.setEmail(formatter.formatCellValue(row.getCell(3)).trim());
 
-                String fechaTexto = formatter.formatCellValue(row.getCell(4)).trim();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                usuario.setFechaNacimiento(sdf.parse(fechaTexto));
+                Cell celdaFecha = row.getCell(4);
+
+                if (celdaFecha != null) {
+
+                    if (celdaFecha.getCellType() == CellType.NUMERIC) {
+
+                        usuario.setFechaNacimiento(celdaFecha.getDateCellValue());
+
+                    } else {
+
+                        String fechaTexto = formatter.formatCellValue(celdaFecha).trim();
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                        usuario.setFechaNacimiento(sdf.parse(fechaTexto));
+                    }
+                }
 
                 usuario.setTelefono(formatter.formatCellValue(row.getCell(5)).trim());
                 usuario.setCelular(formatter.formatCellValue(row.getCell(6)).trim());
