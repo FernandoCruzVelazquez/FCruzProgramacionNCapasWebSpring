@@ -15,7 +15,8 @@ import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Municipio;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Pais;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Result;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Rol;
-
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario;
 import jakarta.validation.ConstraintViolation;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.Set;
 import jakarta.validation.Validator;
+import java.io.FileInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -223,7 +225,13 @@ public class UsuarioController {
                     model.addAttribute("exito", true);
                     model.addAttribute("errores", null);
                 } else if (extension.equals("xlsx")) {
-                    // pendiente 
+                    archivo.transferTo(new File(rutaArchivo));
+                    File file = new File(rutaArchivo);
+
+                    usuarios = LecturaArchivoExcel(file);
+
+                    model.addAttribute("exito", true);
+                    model.addAttribute("errores", null); 
                 } else {
                     model.addAttribute("exito", false);
                     model.addAttribute("mensaje","Extensión no válida");
@@ -311,6 +319,73 @@ public class UsuarioController {
 
                 usuarios.add(usuario);
                 numeroLinea++;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return usuarios;
+    }
+    
+    public List<Usuario> LecturaArchivoExcel(File file) {
+
+        List<Usuario> usuarios = new ArrayList<>();
+
+        try (Workbook workbook = new XSSFWorkbook(file)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            DataFormatter formatter = new DataFormatter();
+
+            int numeroFila = 0;
+
+            for (Row row : sheet) {
+
+                if (numeroFila == 0) {
+                    numeroFila++;
+                    continue;
+                }
+
+                Usuario usuario = new Usuario();
+
+                usuario.setNombre(formatter.formatCellValue(row.getCell(0)).trim());
+                usuario.setApellidoPaterno(formatter.formatCellValue(row.getCell(1)).trim());
+                usuario.setApellidosMaterno(formatter.formatCellValue(row.getCell(2)).trim());
+                usuario.setEmail(formatter.formatCellValue(row.getCell(3)).trim());
+
+                String fechaTexto = formatter.formatCellValue(row.getCell(4)).trim();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                usuario.setFechaNacimiento(sdf.parse(fechaTexto));
+
+                // ESTA ES LA PARTE IMPORTANTE
+                usuario.setTelefono(formatter.formatCellValue(row.getCell(5)).trim());
+                usuario.setCelular(formatter.formatCellValue(row.getCell(6)).trim());
+
+                usuario.setUserName(formatter.formatCellValue(row.getCell(7)).trim());
+                usuario.setSexo(formatter.formatCellValue(row.getCell(8)).trim());
+                usuario.setPassword(formatter.formatCellValue(row.getCell(9)).trim());
+                usuario.setCURP(formatter.formatCellValue(row.getCell(10)).trim());
+
+                Rol rol = new Rol();
+                rol.setIdRol(Integer.parseInt(formatter.formatCellValue(row.getCell(11))));
+                usuario.setRol(rol);
+
+                Direccion direccion = new Direccion();
+                direccion.setCalle(formatter.formatCellValue(row.getCell(12)).trim());
+                direccion.setNumeroExterior(formatter.formatCellValue(row.getCell(13)).trim());
+                direccion.setNumeroIInteriori(formatter.formatCellValue(row.getCell(14)).trim());
+
+                Colonia colonia = new Colonia();
+                colonia.setIdColonia(Integer.parseInt(formatter.formatCellValue(row.getCell(15))));
+                direccion.setColonia(colonia);
+
+                usuario.setDireccion(new ArrayList<>());
+                usuario.getDireccion().add(direccion);
+
+                usuarios.add(usuario);
+
+                numeroFila++;
             }
 
         } catch (Exception e) {
