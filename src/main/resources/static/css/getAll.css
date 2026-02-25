@@ -68,13 +68,6 @@
     border: 2px solid #fff;
 }
 
-.direccion-card {
-    background: rgba(0, 0, 0, 0.3) !important;
-    border-left: 3px solid #da3333 !important;
-    color: #e0e0e0;
-    transition: background 0.2s;
-}
-
 .direccion-card:hover {
     background: rgba(0, 0, 0, 0.5) !important;
 }

@@ -8,7 +8,7 @@ public class Rol {
     
     @NotNull(message = "No puedo ser nulo")
     private Integer IdRol;
-    private String NombreRol;
+    private String NombreRol; 
     
     public Integer getIdRol(){
         return IdRol;

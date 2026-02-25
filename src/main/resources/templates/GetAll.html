@@ -15,10 +15,10 @@
 
 <body class="gradient-custom" th:data-success="${success}" th:data-error="${error}">
 
-<div class="container mt-4">
+    <div class="container mt-4">
 
-    <div class="row mb-4 align-items-center bg-dark bg-opacity-25 py-4 rounded-4 shadow-sm border border-secondary border-opacity-25">
-        <div class="col-sm-8 text-start ps-4"> 
+        <div class="row mb-4 align-items-center bg-dark bg-opacity-25 py-4 rounded-4 shadow-sm border border-secondary border-opacity-25">
+        <div class="col-sm-4 text-start ps-4"> 
             <h2 class="fw-bold text-white mb-1">
                 <i class="bi bi-people-fill me-2"></i>Gestión de Usuarios
             </h2>
@@ -27,10 +27,14 @@
             </p>
         </div>
         
-        <div class="col-sm-4 d-flex align-items-center justify-content-center justify-content-sm-end pe-sm-4 gap-3">
-            
-            <a class="btn btn-success btn-lg rounded-pill px-4 shadow-lg btn-nuevo-usuario" th:href="@{/Usuario/form}">
+        <div class="col-sm-8 d-flex align-items-center justify-content-end gap-3 pe-sm-4">
+
+            <a class="btn btn-success btn-lg rounded-pill px-4 shadow-lg btn-nuevo-usuario text-nowrap" th:href="@{/Usuario/form}">
                 <i class="bi bi-person-plus-fill me-2"></i>Agregar Usuario
+            </a>
+
+            <a class="btn btn-success btn-lg rounded-pill px-4 shadow-lg btn-nuevo-usuario text-nowrap" th:href="@{/Usuario/cargamasiva}">
+                <i class="bi bi-person-plus-fill me-2"></i>Cargar Usuarios
             </a>
 
             <button class="icon-button" data-bs-toggle="modal" data-bs-target="#modalBuscar">

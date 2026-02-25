@@ -9,6 +9,7 @@ import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.RolDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.UsuarioDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Colonia;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Direccion;
+import com.digis01.FCruzProgramacionNCapasWebSpring.ML.ErroresArchivo;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Estado;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Municipio;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Pais;
@@ -17,7 +18,18 @@ import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Rol;
 
 import org.springframework.web.multipart.MultipartFile;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +44,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Base64;
+import java.util.List;
+import java.util.Date;
+import java.util.Set;
+import jakarta.validation.Validator;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 @Controller
 @RequestMapping("Usuario")
@@ -51,6 +69,8 @@ public class UsuarioController {
     private ColoniaDAOImplementation coloniaDAOImplementation;
     @Autowired
     private DireccionDAOImplementation direccionDAOImplementation;
+    @Autowired
+    private Validator validator;
     
     
     
@@ -175,7 +195,156 @@ public class UsuarioController {
         return "redirect:/Usuario";
     }
 
+    @GetMapping("/cargamasiva")
+    public String CargaMasiva() {
+        return "CargaMasiva";
+    }
+    
+    @PostMapping("/cargamasiva")
+    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, Model model) {
+        
+        List<Usuario> usuarios = null;
+        List<ErroresArchivo> errores = new ArrayList<>();
+        
+        try {
+            if (archivo != null) {
 
+                String rutaBase = System.getProperty("user.dir");
+                String rutaCarpeta = "src/main/resources/archivosCM";
+                String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmSS"));
+                String nombreArchivo = fecha + archivo.getOriginalFilename();
+                String rutaArchivo = rutaBase + "/" + rutaCarpeta + "/" + nombreArchivo;
+                String extension = archivo.getOriginalFilename().split("\\.")[1];
+                
+                if (extension.equals("txt")) {
+                    archivo.transferTo(new File(rutaArchivo));
+                    File file = new File(rutaArchivo);
+                    usuarios = LecturaArchivoTxt(file);
+                    model.addAttribute("exito", true);
+                    model.addAttribute("errores", null);
+                } else if (extension.equals("xlsx")) {
+                    // pendiente 
+                } else {
+                    model.addAttribute("exito", false);
+                    model.addAttribute("mensaje","Extensión no válida");
+                    return "CargaMasiva";
+                }
+
+                if (usuarios != null) {
+                    errores = ValidarDatos(usuarios);
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            model.addAttribute("mensaje", "Error al procesar archivo");
+            System.out.println(ex.getLocalizedMessage());
+        }
+        
+        model.addAttribute("errores", errores);
+        model.addAttribute("usuarios", usuarios);
+
+        return "CargaMasiva";
+    }
+    
+
+    public List<Usuario> LecturaArchivoTxt(File file) {
+
+        List<Usuario> usuarios = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(
+                new FileReader(file))) {
+
+            String linea;
+            int numeroLinea = 1;
+
+            while ((linea = br.readLine()) != null) {
+
+                if (linea.trim().isEmpty()) {
+                    numeroLinea++;
+                    continue;
+                }
+
+                String[] datos = linea.split("\\|");
+
+                if (datos.length < 16) {
+                    System.out.println("Línea incompleta: " + numeroLinea);
+                    numeroLinea++;
+                    continue;
+                }
+
+                Usuario usuario = new Usuario();
+
+                usuario.setNombre(datos[0].trim());
+                usuario.setApellidoPaterno(datos[1].trim());
+                usuario.setApellidosMaterno(datos[2].trim());
+                usuario.setEmail(datos[3].trim());
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                sdf.setLenient(false);
+                usuario.setFechaNacimiento(sdf.parse(datos[4].trim()));
+
+                usuario.setTelefono(datos[5].trim());
+                usuario.setCelular(datos[6].trim());
+                usuario.setUserName(datos[7].trim());
+                usuario.setSexo(datos[8].trim());
+                usuario.setPassword(datos[9].trim());
+                usuario.setCURP(datos[10].trim());
+
+                Rol rol = new Rol();
+                rol.setIdRol(Integer.parseInt(datos[11].trim()));
+                usuario.setRol(rol);
+
+                Direccion direccion = new Direccion();
+                direccion.setCalle(datos[12].trim());
+                direccion.setNumeroExterior(datos[13].trim());
+                direccion.setNumeroIInteriori(datos[14].trim());
+
+                Colonia colonia = new Colonia();
+                colonia.setIdColonia(Integer.parseInt(datos[15].trim()));
+                direccion.setColonia(colonia);
+
+                if (usuario.getDireccion() == null) {
+                    usuario.setDireccion(new ArrayList<>());
+                }
+
+                usuario.getDireccion().add(direccion);
+
+                usuarios.add(usuario);
+                numeroLinea++;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return usuarios;
+    }
+    
+    public List<ErroresArchivo> ValidarDatos(List<Usuario> usuarios) {
+
+        List<ErroresArchivo> errores = new ArrayList<>();
+
+        int numeroLinea = 1;
+
+        for (Usuario usuario : usuarios) {
+
+            Set<ConstraintViolation<Usuario>> violaciones = validator.validate(usuario);
+
+            for (ConstraintViolation<Usuario> violacion : violaciones) {
+
+                ErroresArchivo error = new ErroresArchivo();
+                error.setFila(numeroLinea);
+                error.setDato(violacion.getPropertyPath().toString());
+                error.setDescripcion(violacion.getMessage());
+
+                errores.add(error);
+            }
+
+            numeroLinea++;
+        }
+
+        return errores;
+    }
     
     @GetMapping("form")
     public String Accion(Model model) {
