@@ -41,6 +41,7 @@ public class Usuario {
     @Pattern(regexp = "^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z]{2}$",message = "CURP Invalido")
     private String CURP;
     private String foto;
+    private int Status;
     @Valid
     public Rol Rol;
     @Valid
@@ -172,6 +173,14 @@ public class Usuario {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public int getStatus() {
+        return Status;
+    }
+
+    public void setStatus(int Status) {
+        this.Status = Status;
     }
 
     public List<Direccion> getDireccion() {

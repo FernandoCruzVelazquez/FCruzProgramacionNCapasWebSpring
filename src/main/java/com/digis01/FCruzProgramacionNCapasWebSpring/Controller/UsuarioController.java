@@ -213,8 +213,9 @@ public class UsuarioController {
 
             if (archivo != null && !archivo.isEmpty()) {
 
-                String rutaBase = System.getProperty("user.dir");
-                String rutaCarpeta = "src/main/resources/archivosCM";
+                String rutaBase = System.getProperty("user.home");
+                String rutaCarpeta = "Documents" + File.separator + "archivosCM";
+                
                 String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
                 String nombreArchivo = fecha + archivo.getOriginalFilename();
                 String rutaArchivo = rutaBase + "/" + rutaCarpeta + "/" + nombreArchivo;
@@ -454,42 +455,27 @@ public class UsuarioController {
     @GetMapping("/cargamasiva/procesar")
     public String ProcesarCargaMasiva(HttpSession session, RedirectAttributes redirectAttributes) {
 
-        List<Usuario> usuarios =
-                (List<Usuario>) session.getAttribute("usuariosCM");
+        List<Usuario> usuarios = (List<Usuario>) session.getAttribute("usuariosCM");
 
         if (usuarios == null || usuarios.isEmpty()) {
-
-            redirectAttributes.addFlashAttribute("mensaje",
-                    "No hay archivo para procesar");
-
-            redirectAttributes.addFlashAttribute("tipo",
-                    "warning");
-
+            redirectAttributes.addFlashAttribute("mensaje", "No hay archivo para procesar");
+            redirectAttributes.addFlashAttribute("tipo", "warning");
             return "redirect:/Usuario/cargamasiva";
         }
 
-        int correctos = 0;
-        int incorrectos = 0;
+        Result result = usuarioDAOImplementation.AddAll(usuarios);
 
-        for (Usuario usuario : usuarios) {
-
-            Result result = usuarioDAOImplementation.Add(usuario);
-
-            if (result.correct) correctos++;
-            else incorrectos++;
-
+        if (result.correct) {
+            redirectAttributes.addFlashAttribute("mensaje", "Carga masiva completada exitosamente");
+            redirectAttributes.addFlashAttribute("tipo", "success");
+            redirectAttributes.addFlashAttribute("correctos", usuarios.size());
+            redirectAttributes.addFlashAttribute("incorrectos", 0);
+        } else {
+            redirectAttributes.addFlashAttribute("mensaje", "Error al procesar la carga: " + result.errorMessage);
+            redirectAttributes.addFlashAttribute("tipo", "danger");
         }
 
         session.removeAttribute("usuariosCM");
-
-        redirectAttributes.addFlashAttribute("mensaje", "Carga masiva completada");
-
-        redirectAttributes.addFlashAttribute("tipo", "success");
-
-        redirectAttributes.addFlashAttribute("correctos",  correctos);
-
-        redirectAttributes.addFlashAttribute("incorrectos", incorrectos);
-
         return "redirect:/Usuario";
     }
     

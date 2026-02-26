@@ -10,10 +10,12 @@ import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Rol;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.CallableStatementCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class UsuarioDAOImplementation implements IUsuario {
@@ -83,6 +85,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                     usuario.setCelular(resultSet.getString("Celular"));
                     usuario.setTelefono(resultSet.getString("Telefono"));
                     usuario.setFoto(resultSet.getString("Foto"));
+                    usuario.setStatus(resultSet.getInt("Status"));
                     
                     usuario.Rol = new Rol();
                     usuario.Rol.setIdRol(resultSet.getInt("IdRol"));
@@ -138,8 +141,7 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         try {
 
-            JdbcTemplate.update(
-                "CALL UsuarioDireccionAddSP(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            JdbcTemplate.update("CALL UsuarioDireccionAddSP(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 
                 usuario.getNombre(),
                 usuario.getApellidoPaterno(),
@@ -172,6 +174,53 @@ public class UsuarioDAOImplementation implements IUsuario {
         return result;
     }
     
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result AddAll(List<Usuario> usuarios) {
+        Result result = new Result();
+
+        try {
+            JdbcTemplate.batchUpdate("CALL UsuarioDireccionAddSP(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                usuarios,
+                usuarios.size(),
+                (ps, usuario) -> {
+                    ps.setString(1, usuario.getNombre());
+                    ps.setString(2, usuario.getApellidoPaterno());
+                    ps.setString(3, usuario.getApellidosMaterno());
+                    ps.setString(4, usuario.getEmail());
+                    ps.setString(5, usuario.getPassword());
+                    ps.setString(6, usuario.getSexo());
+                    ps.setString(7, usuario.getTelefono());
+                    ps.setString(8, usuario.getCelular());
+                    ps.setString(9, usuario.getCURP());
+                    ps.setString(10, usuario.getUserName());
+
+                    if (usuario.getFechaNacimiento() != null) {
+                        ps.setDate(11, new java.sql.Date(usuario.getFechaNacimiento().getTime()));
+                    } else {
+                        ps.setNull(11, java.sql.Types.DATE);
+                    }
+
+                    ps.setInt(12, usuario.getRol().getIdRol());
+                    ps.setString(13, usuario.getFoto());
+                    ps.setString(14, usuario.getDireccion().get(0).getCalle());
+                    ps.setObject(15, usuario.getDireccion().get(0).getNumeroIInteriori(), java.sql.Types.NUMERIC);
+                    ps.setObject(16, usuario.getDireccion().get(0).getNumeroExterior(), java.sql.Types.NUMERIC);
+
+                    ps.setInt(17, usuario.getDireccion().get(0).getColonia().getIdColonia());
+                });
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = "Ocurrió un error de base de datos al registrar los usuarios. Verifique los datos.";
+            System.err.println("Error técnico: " + ex.getMessage());
+        }
+
+        return result;
+    }
+    
     @Override
     public Result Update(Usuario usuario) {
 
@@ -192,6 +241,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                     usuario.getTelefono(),
                     usuario.getCelular(),
                     usuario.getCURP(),
+                    usuario.getStatus(),
                     usuario.getRol().getIdRol()
             );
 
@@ -404,6 +454,6 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         return direccion;
     }
-
-
+  
+    
 }
