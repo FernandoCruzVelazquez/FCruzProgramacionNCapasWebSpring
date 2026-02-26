@@ -160,15 +160,19 @@
                     <div class="p-5 bg-white border-top">
                         <h5 class="section-title mb-4">Ubicaciones Registradas</h5>
                         
-                        <div th:if="${#lists.isEmpty(usuario.direccion)}" class="alert alert-light border text-center p-4">
+                        <div th:if="${usuario.direccion == null or usuario.direccion.?[idDireccion > 0].size() == 0}"
+                            class="alert alert-light border text-center p-4">
                             <i class="bi bi-geo fs-1 text-muted d-block mb-2"></i>
                             No se encontraron direcciones asociadas a este perfil.
                         </div>
 
                         <div class="row g-4">
-                            <div class="col-md-6" th:each="direccion : ${usuario.direccion}">
+                            <div class="col-md-6" th:each="direccion : ${usuario.direccion.?[idDireccion > 0]}">
+
                                 <div class="address-card p-4 shadow-sm">
+
                                     <div class="d-flex justify-content-between align-items-start mb-3">
+                                        
                                         <h6 class="fw-bold text-dark mb-0">
                                             <i class="bi bi-geo-alt-fill text-danger me-2"></i>
                                             <span th:text="${direccion.calle}"></span>

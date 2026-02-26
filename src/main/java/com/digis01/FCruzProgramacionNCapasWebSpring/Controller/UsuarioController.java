@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validation;
@@ -203,51 +204,69 @@ public class UsuarioController {
     }
     
     @PostMapping("/cargamasiva")
-    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, Model model) {
-        
+    public String CargaMasiva(@RequestParam("archivo") MultipartFile archivo, Model model, HttpSession session) {
+
         List<Usuario> usuarios = null;
         List<ErroresArchivo> errores = new ArrayList<>();
-        
+
         try {
-            if (archivo != null) {
+
+            if (archivo != null && !archivo.isEmpty()) {
 
                 String rutaBase = System.getProperty("user.dir");
                 String rutaCarpeta = "src/main/resources/archivosCM";
-                String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmSS"));
+                String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
                 String nombreArchivo = fecha + archivo.getOriginalFilename();
                 String rutaArchivo = rutaBase + "/" + rutaCarpeta + "/" + nombreArchivo;
+
                 String extension = archivo.getOriginalFilename().split("\\.")[1];
-                
-                if (extension.equals("txt")) {
-                    archivo.transferTo(new File(rutaArchivo));
-                    File file = new File(rutaArchivo);
+
+                archivo.transferTo(new File(rutaArchivo));
+
+                File file = new File(rutaArchivo);
+
+                if (extension.equalsIgnoreCase("txt")) {
+
                     usuarios = LecturaArchivoTxt(file);
-                    model.addAttribute("exito", true);
-                    model.addAttribute("errores", null);
-                } else if (extension.equals("xlsx")) {
-                    archivo.transferTo(new File(rutaArchivo));
-                    File file = new File(rutaArchivo);
+
+                } else if (extension.equalsIgnoreCase("xlsx")) {
 
                     usuarios = LecturaArchivoExcel(file);
 
-                    model.addAttribute("exito", true);
-                    model.addAttribute("errores", null); 
                 } else {
+
                     model.addAttribute("exito", false);
                     model.addAttribute("mensaje","Extensión no válida");
                     return "CargaMasiva";
                 }
 
                 if (usuarios != null) {
+
                     errores = ValidarDatos(usuarios);
+
+                    if (errores.isEmpty()) {
+
+                        session.setAttribute("usuariosCM", usuarios);
+
+                        model.addAttribute("exito", true);
+
+                    } else {
+
+                        model.addAttribute("exito", false);
+
+                    }
+
                 }
+
             }
+
         } catch (Exception ex) {
+
             ex.printStackTrace();
             model.addAttribute("mensaje", "Error al procesar archivo");
-            System.out.println(ex.getLocalizedMessage());
+
         }
-        
+
         model.addAttribute("errores", errores);
         model.addAttribute("usuarios", usuarios);
 
@@ -430,6 +449,48 @@ public class UsuarioController {
         }
 
         return errores;
+    }
+    
+    @GetMapping("/cargamasiva/procesar")
+    public String ProcesarCargaMasiva(HttpSession session, RedirectAttributes redirectAttributes) {
+
+        List<Usuario> usuarios =
+                (List<Usuario>) session.getAttribute("usuariosCM");
+
+        if (usuarios == null || usuarios.isEmpty()) {
+
+            redirectAttributes.addFlashAttribute("mensaje",
+                    "No hay archivo para procesar");
+
+            redirectAttributes.addFlashAttribute("tipo",
+                    "warning");
+
+            return "redirect:/Usuario/cargamasiva";
+        }
+
+        int correctos = 0;
+        int incorrectos = 0;
+
+        for (Usuario usuario : usuarios) {
+
+            Result result = usuarioDAOImplementation.Add(usuario);
+
+            if (result.correct) correctos++;
+            else incorrectos++;
+
+        }
+
+        session.removeAttribute("usuariosCM");
+
+        redirectAttributes.addFlashAttribute("mensaje", "Carga masiva completada");
+
+        redirectAttributes.addFlashAttribute("tipo", "success");
+
+        redirectAttributes.addFlashAttribute("correctos",  correctos);
+
+        redirectAttributes.addFlashAttribute("incorrectos", incorrectos);
+
+        return "redirect:/Usuario";
     }
     
     @GetMapping("form")
