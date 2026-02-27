@@ -241,7 +241,6 @@ public class UsuarioDAOImplementation implements IUsuario {
                     usuario.getTelefono(),
                     usuario.getCelular(),
                     usuario.getCURP(),
-                    usuario.getStatus(),
                     usuario.getRol().getIdRol()
             );
 
@@ -320,6 +319,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                     usuario.setCURP(rs.getString("CURP"));
                     usuario.setTelefono(rs.getString("Telefono"));
                     usuario.setCelular(rs.getString("Celular"));
+                    usuario.setStatus(rs.getInt("Status"));
 
                     Rol rol = new Rol();
                     rol.setIdRol(rs.getInt("idrol"));
@@ -363,7 +363,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                 } else {
                     callableStament.setNull(4, java.sql.Types.NUMERIC);
                 }
-
+                
                 callableStament.registerOutParameter(5, java.sql.Types.REF_CURSOR);
 
                 callableStament.execute();

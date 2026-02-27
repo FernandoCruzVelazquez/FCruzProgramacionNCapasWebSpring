@@ -1,6 +1,9 @@
 console.log("JS cargado correctamente");
 
+
 function cargarUsuario(btn) {
+
+    
 
     document.getElementById("idUsuario").value = btn.dataset.id;
     document.getElementById("userName").value = btn.dataset.username;
@@ -27,6 +30,18 @@ function cargarUsuario(btn) {
         document.getElementById("sexoF").checked = true;
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const switchStatus = document.getElementById("editStatus");
+    const hiddenStatus = document.getElementById("statusHidden");
+
+    switchStatus.addEventListener("change", function () {
+        hiddenStatus.value = this.checked ? 1 : 0;
+        console.log("Nuevo status:", hiddenStatus.value);
+    });
+
+});
 
 
 async function cargarSelect(url, selectId, idKey, selectedId = null) {
@@ -205,7 +220,6 @@ function ejecutarBusqueda() {
         url: "/Usuario/GetById/" + id,
         type: "GET",
         success: function(result) {
-            // ... dentro del success de tu AJAX
             if (result.correct) {
                 let u = result.object; 
                 $('#cardResultado').fadeIn();
