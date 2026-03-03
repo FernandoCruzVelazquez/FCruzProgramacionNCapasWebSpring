@@ -3,6 +3,7 @@ package com.digis01.FCruzProgramacionNCapasWebSpring.Controller;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.ColoniaDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.DireccionDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.EstadoDAOImplementation;
+import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.IUsuarioJPA;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.MunicipioDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.PaisDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.RolDAOImplementation;
@@ -22,18 +23,13 @@ import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,10 +43,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Base64;
 import java.util.List;
-import java.util.Date;
 import java.util.Set;
 import jakarta.validation.Validator;
-import java.io.FileInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
@@ -75,6 +69,8 @@ public class UsuarioController {
     @Autowired
     private Validator validator;
     
+    @Autowired
+    private IUsuarioJPA usuarioJPA;
     
     
     @GetMapping()          
@@ -88,6 +84,19 @@ public class UsuarioController {
         model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
         return "GetAll";
     } 
+    
+    @GetMapping("/JPA")          
+    public String indexJPA (Model model){
+        Result result = usuarioJPA.GetAll();
+        
+        model.addAttribute("usuarios", result.objects);
+
+        Result resultRoles = rolDAOImplementation.GetAll();  
+        model.addAttribute("roles", resultRoles.objects);
+
+        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
+        return "GetAll";
+    }
     
     @GetMapping("/GetById/{id}")
     @ResponseBody
