@@ -15,7 +15,7 @@ public class Direccion {
     private String calle;
 
     @Column(name = "numeroiinteriori")
-    private String numeroInterior;
+    private String NumeroIInteriori;
 
     @Column(name = "numeroexterior")
     private String numeroExterior;
@@ -47,12 +47,12 @@ public class Direccion {
         this.calle = calle;
     }
 
-    public String getNumeroInterior() {
-        return numeroInterior;
+    public String getNumeroIInteriori() {
+        return NumeroIInteriori;
     }
 
-    public void setNumeroInterior(String numeroInterior) {
-        this.numeroInterior = numeroInterior;
+    public void setNumeroIInteriori(String NumeroIInteriori) {
+        this.NumeroIInteriori = NumeroIInteriori;
     }
 
     public String getNumeroExterior() {

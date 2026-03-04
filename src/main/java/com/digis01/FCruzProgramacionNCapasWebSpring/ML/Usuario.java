@@ -45,12 +45,12 @@ public class Usuario {
     @Valid
     public Rol Rol;
     @Valid
-    public List<Direccion> Direccion;
+    public List<Direccion> direccion;
 
     
     
     public Usuario() {
-        this.Direccion = new ArrayList<>();
+        this.direccion = new ArrayList<>();
     }
 
     public Usuario(int idUsuario, String nombre, String apellidoPaterno, String apellidosMaterno, String email, Date fechaNacimiento, String telefono, String celular, String UserName, String sexo, String password, String CURP, Rol Rol, List<Direccion> Direccion) {
@@ -67,7 +67,7 @@ public class Usuario {
         this.password = password;
         this.CURP = CURP;
         this.Rol = Rol;
-        this.Direccion = Direccion;
+        this.direccion = Direccion;
     }
 
     
@@ -184,11 +184,11 @@ public class Usuario {
     }
 
     public List<Direccion> getDireccion() {
-        return Direccion;
+        return direccion;
     }
 
-    public void setDireccion(List<Direccion> Direccion) {
-        this.Direccion = Direccion;
+    public void setDireccion(List<Direccion> direccion) {
+        this.direccion = direccion;
     }
 
     public Rol getRol() {

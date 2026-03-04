@@ -2,8 +2,7 @@ package com.digis01.FCruzProgramacionNCapasWebSpring.ML;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import java.util.List;
+
 
 public class Direccion {
     

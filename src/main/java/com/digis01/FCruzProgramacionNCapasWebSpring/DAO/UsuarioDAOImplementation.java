@@ -68,7 +68,7 @@ public class UsuarioDAOImplementation implements IUsuario {
                     colonia.setMunicipio(municipio);
                     direccion.setColonia(colonia);
                     
-                    ((Usuario)(result.objects.get(result.objects.size()-1))).Direccion.add(direccion);
+                    ((Usuario)(result.objects.get(result.objects.size()-1))).direccion.add(direccion);
                 }else{
                     
                     Usuario usuario = new Usuario();

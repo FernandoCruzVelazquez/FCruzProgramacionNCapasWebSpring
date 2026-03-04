@@ -23,57 +23,58 @@ import jakarta.validation.Valid;
 
 
 @Entity
-@Table(name = "USUARIO")
+@Table(name = "usuario")
 public class Usuario {
 
     @Id
-    @Column(name = "IDUSUARIO")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idusuario")
     private int idUsuario;
 
-    @Column(name = "NOMBRE")
+    @Column(name = "nombre")
     private String nombre;
 
-    @Column(name = "APELLIDOPATERNO")
+    @Column(name = "apellidopaterno")
     private String apellidoPaterno;
 
-    @Column(name = "APELLIDOSMATERNO")
+    @Column(name = "apellidosmaterno")
     private String apellidosMaterno;
 
-    @Column(name = "EMAIL")
+    @Column(name = "email")
     private String email;
 
     @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "FECHANACIMIENTO")
+    @Column(name = "fechanacimiento")
     private Date fechaNacimiento;
 
-    @Column(name = "TELEFONO")
+    @Column(name = "telefono")
     private String telefono;
 
-    @Column(name = "CELULAR")
+    @Column(name = "celular")
     private String celular;
 
-    @Column(name = "USERNAME")
+    @Column(name = "username")
     private String userName;
 
-    @Column(name = "SEXO", length = 2)
+    @Column(name = "sexo", length = 2)
     private String sexo;
 
-    @Column(name = "PASSWORD")
+    @Column(name = "password")
     private String password;
 
-    @Column(name = "CURP")
+    @Column(name = "curp")
     private String curp;
 
     @Lob
-    @Column(name = "FOTO")
+    @Column(name = "foto")
     private String foto;
 
-    @Column(name = "STATUS")
+    @Column(name = "status")
     private Integer status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "IDROL")
+    @JoinColumn(name = "idrol")
     private Rol rol;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
@@ -206,11 +207,11 @@ public class Usuario {
         this.foto = foto;
     }
 
-    public int getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

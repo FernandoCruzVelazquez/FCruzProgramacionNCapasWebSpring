@@ -8,6 +8,7 @@ import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.MunicipioDAOImplementati
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.PaisDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.RolDAOImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.UsuarioDAOImplementation;
+import com.digis01.FCruzProgramacionNCapasWebSpring.DAO.UsuarioDAOJPAImplementation;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Colonia;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.Direccion;
 import com.digis01.FCruzProgramacionNCapasWebSpring.ML.ErroresArchivo;
@@ -70,12 +71,12 @@ public class UsuarioController {
     private Validator validator;
     
     @Autowired
-    private IUsuarioJPA usuarioJPA;
+    private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
     
     
     @GetMapping()          
     public String index (Model model){
-        Result result = usuarioDAOImplementation.GetAll();
+        Result result = usuarioDAOJPAImplementation.GetAll();
         model.addAttribute("usuarios", result.objects);
 
         Result resultRoles = rolDAOImplementation.GetAll();  
@@ -85,23 +86,10 @@ public class UsuarioController {
         return "GetAll";
     } 
     
-    @GetMapping("/JPA")          
-    public String indexJPA (Model model){
-        Result result = usuarioJPA.GetAll();
-        
-        model.addAttribute("usuarios", result.objects);
-
-        Result resultRoles = rolDAOImplementation.GetAll();  
-        model.addAttribute("roles", resultRoles.objects);
-
-        model.addAttribute("paises", paisDAOImplementation.GetAll().objects);
-        return "GetAll";
-    }
-    
     @GetMapping("/GetById/{id}")
     @ResponseBody
     public Result getByIdJSON(@PathVariable("id") int id) {
-        Result result = usuarioDAOImplementation.GetById(id);
+        Result result = usuarioDAOJPAImplementation.GetById(id);
         return result;
     }
     
@@ -121,7 +109,7 @@ public class UsuarioController {
     @PostMapping("/update")
     public String Update(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {      
 
-        Result result = usuarioDAOImplementation.Update(usuario);
+        Result result = usuarioDAOJPAImplementation.Update(usuario);
 
         if (result.correct) {
             redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
@@ -570,7 +558,7 @@ public class UsuarioController {
             return "formulario";
         }
 
-        Result result = usuarioDAOImplementation.Add(usuario);
+        Result result = usuarioDAOJPAImplementation.Add(usuario);
 
         if (result.correct) {
             model.addAttribute("success", "Usuario agregado correctamente");

@@ -207,7 +207,6 @@ document.getElementById('modalFoto').addEventListener('hidden.bs.modal', functio
 
 });
 
-
 function ejecutarBusqueda() {
     let id = $('#txtIdBuscar').val();
     
@@ -219,32 +218,33 @@ function ejecutarBusqueda() {
     $.ajax({
         url: "/Usuario/GetById/" + id,
         type: "GET",
+        dataType: "json", 
         success: function(result) {
             if (result.correct) {
                 let u = result.object; 
                 $('#cardResultado').fadeIn();
+
+                let nombreCompleto = u.nombre + " " + u.apellidoPaterno + " " + (u.apellidosMaterno || "");
+                $('#resNombre').text(nombreCompleto);
                 
-                $('#resNombre').text(u.nombre + " " + u.apellidoPaterno + " " + (u.apellidoMaterno || ""));
                 $('#resEmail').text(u.email);
-                $('#resRol').text(u.rol ? u.rol.nombreRol : "Sin rol");
+                
+
+                $('#resRol').text(u.Rol ? u.Rol.NombreRol : "Sin rol");
+                
                 $('#resTelefono').text(u.telefono || "N/A");
                 $('#resCelular').text(u.celular || "N/A");
-                $('#resCurp').text(u.curp || "N/A");
-
-
-                if (u.direccion) {
-                    let d = u.direccion;
-                    let direccionCompleta = `${d.calle} #${d.numeroExterior}, CP: ${d.codigoPostal}, ${d.municipio.nombre}, ${d.municipio.estado.nombre}`;
-                    $('#resDireccion').text(direccionCompleta);
-                } else {
-                    $('#resDireccion').text("Dirección no registrada");
-                }
+                
+                $('#resCurp').text(u.CURP || "N/A");
 
                 $('#lnkDetalle').attr('href', '/Usuario/Detalle?id=' + u.idUsuario);
+            } else {
+                Swal.fire('Error', result.errorMessage || "No se encontró el usuario", 'error');
             }
         },
-        error: function() {
-            Swal.fire('Error', 'Error en el servidor al buscar', 'error');
+        error: function(xhr, status, error) {
+            console.error("Error detallado:", xhr.responseText);
+            Swal.fire('Error', 'El servidor envió datos pero el formato es circular o inválido.', 'error');
         }
     });
 }
