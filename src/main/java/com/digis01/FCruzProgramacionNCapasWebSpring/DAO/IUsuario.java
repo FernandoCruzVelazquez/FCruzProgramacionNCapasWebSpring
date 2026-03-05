@@ -17,5 +17,6 @@ public interface IUsuario {
     Result GetByFilter(Usuario usuario);
     
     Result UpdateFoto(int idUsuario, String foto);
+    Result UpdateStatus(int idUsuario, int status);
     
 }

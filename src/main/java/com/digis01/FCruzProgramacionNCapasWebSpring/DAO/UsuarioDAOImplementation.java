@@ -454,6 +454,32 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         return direccion;
     }
+    
+    
+    @Override
+    public Result UpdateStatus(int idUsuario, int status) {
+
+        Result result = new Result();
+
+        try {
+
+            JdbcTemplate.update("CALL StatusUpdateSP(?, ?)",
+                    status,
+                    idUsuario
+            );
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+
+        }
+
+        return result;
+    }
   
     
 }

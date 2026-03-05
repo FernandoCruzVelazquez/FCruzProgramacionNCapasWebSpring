@@ -249,3 +249,43 @@ function ejecutarBusqueda() {
     });
 }
 
+function cambiarStatus(idUsuario, checkbox) {
+
+    let status = checkbox.checked ? 1 : 0;
+
+    $.ajax({
+        url: "/Usuario/UpdateStatus",
+        type: "POST",
+        data: {
+            idUsuario: idUsuario,
+            status: status
+        },
+        success: function (result) {
+
+            if (result.correct) {
+
+                let label = $(checkbox).next('.status-label');
+
+                if (status === 1) {
+                    label.text("Activo");
+                } else {
+                    label.text("Inactivo");
+                }
+
+            } else {
+
+                Swal.fire('Error', result.errorMessage, 'error');
+
+                checkbox.checked = !checkbox.checked;
+            }
+        },
+        error: function () {
+
+            Swal.fire('Error', 'No se pudo actualizar el status', 'error');
+
+            checkbox.checked = !checkbox.checked;
+
+        }
+    });
+}
+

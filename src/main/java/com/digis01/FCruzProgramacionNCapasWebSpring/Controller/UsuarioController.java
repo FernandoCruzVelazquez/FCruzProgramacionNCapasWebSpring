@@ -727,5 +727,14 @@ public class UsuarioController {
         
         return result;
     }
+    
+    @PostMapping("/Usuario/UpdateStatus")
+    @ResponseBody
+    public Result UpdateStatus(@RequestParam int idUsuario, @RequestParam int status) {
+
+        Result result = usuarioDAOImplementation.UpdateStatus(idUsuario, status);
+
+        return result;
+    }
 
 }
