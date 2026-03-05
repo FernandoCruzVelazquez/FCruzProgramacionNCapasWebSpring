@@ -164,4 +164,119 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         return result;
     }
     
+    @Override
+    public Result GetByFilter(com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario usuarioBusqueda) {
+
+        Result result = new Result();
+
+        try {
+
+            String jpql = "SELECT DISTINCT u FROM Usuario u " +
+                          "LEFT JOIN FETCH u.rol r " +
+                          "LEFT JOIN FETCH u.direccion d " +
+                          "LEFT JOIN FETCH d.colonia c " +
+                          "LEFT JOIN FETCH c.municipio m " +
+                          "LEFT JOIN FETCH m.estado e " +
+                          "LEFT JOIN FETCH e.pais p " +
+                          "WHERE 1=1 ";
+
+            if (usuarioBusqueda.getNombre() != null && !usuarioBusqueda.getNombre().trim().isEmpty()) {
+                jpql += "AND LOWER(u.nombre) LIKE LOWER(:nombre) ";
+            }
+
+            if (usuarioBusqueda.getApellidoPaterno() != null && !usuarioBusqueda.getApellidoPaterno().trim().isEmpty()) {
+                jpql += "AND LOWER(u.apellidoPaterno) LIKE LOWER(:apellidoPaterno) ";
+            }
+
+            if (usuarioBusqueda.getApellidosMaterno() != null && !usuarioBusqueda.getApellidosMaterno().trim().isEmpty()) {
+                jpql += "AND LOWER(u.apellidosMaterno) LIKE LOWER(:apellidoMaterno) ";
+            }
+
+            if (usuarioBusqueda.getRol() != null &&
+                usuarioBusqueda.getRol().getIdRol() != null &&
+                usuarioBusqueda.getRol().getIdRol() > 0) {
+
+                jpql += "AND r.idRol = :idRol ";
+            }
+
+            TypedQuery<com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario> query =
+                    entityManager.createQuery(jpql, com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario.class);
+
+            if (usuarioBusqueda.getNombre() != null && !usuarioBusqueda.getNombre().trim().isEmpty()) {
+                query.setParameter("nombre", "%" + usuarioBusqueda.getNombre().trim() + "%");
+            }
+
+            if (usuarioBusqueda.getApellidoPaterno() != null && !usuarioBusqueda.getApellidoPaterno().trim().isEmpty()) {
+                query.setParameter("apellidoPaterno", "%" + usuarioBusqueda.getApellidoPaterno().trim() + "%");
+            }
+
+            if (usuarioBusqueda.getApellidosMaterno() != null && !usuarioBusqueda.getApellidosMaterno().trim().isEmpty()) {
+                query.setParameter("apellidoMaterno", "%" + usuarioBusqueda.getApellidosMaterno().trim() + "%");
+            }
+
+            if (usuarioBusqueda.getRol() != null &&
+                usuarioBusqueda.getRol().getIdRol() != null &&
+                usuarioBusqueda.getRol().getIdRol() > 0) {
+
+                query.setParameter("idRol", usuarioBusqueda.getRol().getIdRol());
+            }
+
+            List<com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario> usuariosJPA = query.getResultList();
+
+            result.objects = new ArrayList<>();
+
+            for (com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario usuarioJPA : usuariosJPA) {
+
+                com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario usuarioML =
+                        modelMapper.map(usuarioJPA,
+                        com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario.class);
+
+                result.objects.add(usuarioML);
+            }
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
+    
+    @Override
+    @Transactional
+    public Result Delete(int idUsuario) {
+
+        Result result = new Result();
+
+        try {
+
+            com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario usuarioJPA =
+                    entityManager.find(
+                        com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario.class,
+                        idUsuario
+                    );
+
+            if (usuarioJPA != null) {
+                entityManager.remove(usuarioJPA);
+                result.correct = true;
+            } else {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+            }
+
+        } catch (Exception ex) {
+
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
+    
+    
+    
 }

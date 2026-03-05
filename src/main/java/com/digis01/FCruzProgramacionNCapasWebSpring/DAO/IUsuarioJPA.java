@@ -10,4 +10,7 @@ public interface IUsuarioJPA {
     Result GetById(int idUsuario);
     Result Update(Usuario usuario);
     Result UpdateFoto(int idUsuario, String foto);
+    Result GetByFilter(Usuario usuario);
+    Result Delete(int idUsuario);
+    
 }

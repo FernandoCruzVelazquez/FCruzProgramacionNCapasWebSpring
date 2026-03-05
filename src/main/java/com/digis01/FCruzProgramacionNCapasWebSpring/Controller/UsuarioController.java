@@ -68,6 +68,8 @@ public class UsuarioController {
     @Autowired
     private DireccionDAOImplementation direccionDAOImplementation;
     @Autowired
+    private DireccionDAOImplementation direccionDAOJPAImplementation;
+    @Autowired
     private Validator validator;
     
     @Autowired
@@ -96,7 +98,7 @@ public class UsuarioController {
     @PostMapping("/GetByFilter")
     public String getByFilter(Usuario usuario, Model model) {
         
-        Result result = usuarioDAOImplementation.GetByFilter(usuario);
+        Result result = usuarioDAOJPAImplementation.GetByFilter(usuario);
         model.addAttribute("usuarios", result.objects);
 
         
@@ -123,7 +125,7 @@ public class UsuarioController {
     @PostMapping("/GuardarDireccion")
     public String GuardarDireccion(@ModelAttribute Direccion direccion, RedirectAttributes redirectAttributes) {
 
-        Result result = direccionDAOImplementation.Update(direccion);
+        Result result = direccionDAOJPAImplementation.Update(direccion);
 
         if (result.correct) {redirectAttributes.addFlashAttribute("success","Dirección actualizada correctamente");
         } else {
@@ -148,7 +150,7 @@ public class UsuarioController {
                     String base64 = Base64.getEncoder().encodeToString(bytes);
                     String imagenFinal = "data:" + tipo + ";base64," + base64;
 
-                    Result result = usuarioDAOImplementation.UpdateFoto(idUsuario, imagenFinal);
+                    Result result = usuarioDAOJPAImplementation.UpdateFoto(idUsuario, imagenFinal);
 
                     if (result.correct) {
                         redirectAttributes.addFlashAttribute("success", "Foto actualizada correctamente");
@@ -171,7 +173,7 @@ public class UsuarioController {
     @PostMapping("/delete")
     public String eliminarUsuario(@RequestParam("idUsuario") int idUsuario, RedirectAttributes redirectAttributes) {
 
-        Result result = usuarioDAOImplementation.Delete(idUsuario);
+        Result result = usuarioDAOJPAImplementation.Delete(idUsuario);
 
         redirectAttributes.addFlashAttribute("success",
                 "Usuario eliminado correctamente");
@@ -182,7 +184,7 @@ public class UsuarioController {
     @PostMapping("/Direccion/delete")
     public String eliminarDireccion(@RequestParam("idDireccion") int idDireccion, RedirectAttributes redirectAttributes) {
 
-        Result result = direccionDAOImplementation.DeleteDireccion(idDireccion);
+        Result result = direccionDAOJPAImplementation.DeleteDireccion(idDireccion);
 
         if (result.correct) {
             redirectAttributes.addFlashAttribute("success",
@@ -584,7 +586,7 @@ public class UsuarioController {
         model.addAttribute("roles", rolDAOImplementation.GetAll().objects);
 
 
-        Result result = usuarioDAOImplementation.GetAll();
+        Result result = usuarioDAOJPAImplementation.GetAll();
 
         if (result.objects != null) {
             for (Object obj : result.objects) {
@@ -604,7 +606,7 @@ public class UsuarioController {
     @PostMapping("/DetalleUpdate")
     public String DetalleUpdate(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {      
 
-        Result result = usuarioDAOImplementation.Update(usuario);
+        Result result = usuarioDAOJPAImplementation.Update(usuario);
 
         if (result.correct) {
             redirectAttributes.addFlashAttribute("success", "Usuario actualizado correctamente");
@@ -618,7 +620,7 @@ public class UsuarioController {
     @PostMapping("/DetalleGuardarDireccion")
     public String DetalleGuardarDireccion(@ModelAttribute Direccion direccion, RedirectAttributes redirectAttributes) {
 
-        Result result = direccionDAOImplementation.Update(direccion);
+        Result result = direccionDAOJPAImplementation.Update(direccion);
 
         if (result.correct) {redirectAttributes.addFlashAttribute("success","Dirección actualizada correctamente");
         } else {
@@ -643,7 +645,7 @@ public class UsuarioController {
                     String base64 = Base64.getEncoder().encodeToString(bytes);
                     String imagenFinal = "data:" + tipo + ";base64," + base64;
 
-                    Result result = usuarioDAOImplementation.UpdateFoto(idUsuario, imagenFinal);
+                    Result result = usuarioDAOJPAImplementation.UpdateFoto(idUsuario, imagenFinal);
 
                     if (result.correct) {
                         redirectAttributes.addFlashAttribute("success", "Foto actualizada correctamente");
