@@ -276,6 +276,41 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
         return result;
     }
+
+    @Override
+    @Transactional
+    public Result GetByUsername(String Username) {
+        Result result = new Result();
+
+        try {
+            String jpql = "SELECT u FROM Usuario u " +
+                          "LEFT JOIN FETCH u.rol " +
+                          "WHERE u.userName = :pUsername";
+
+            TypedQuery<com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario> queryUsuario =
+                    entityManager.createQuery(jpql, com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario.class);
+
+            queryUsuario.setParameter("pUsername", Username);
+
+            com.digis01.FCruzProgramacionNCapasWebSpring.JPA.Usuario usuarioJPA = queryUsuario.getSingleResult();
+
+            com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario usuarioML =
+                    modelMapper.map(usuarioJPA, com.digis01.FCruzProgramacionNCapasWebSpring.ML.Usuario.class);
+
+            result.object = usuarioML;
+            result.correct = true;
+
+        } catch (jakarta.persistence.NoResultException nrEx) {
+            result.correct = false;
+            result.errorMessage = "Usuario no encontrado en la base de datos.";
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
     
     
     
