@@ -253,6 +253,9 @@ function cambiarStatus(idUsuario, checkbox) {
 
     let status = checkbox.checked ? 1 : 0;
 
+    let token = document.querySelector("meta[name='_csrf']").content;
+    let header = document.querySelector("meta[name='_csrf_header']").content;
+
     $.ajax({
         url: "/Usuario/UpdateStatus",
         type: "POST",
@@ -260,31 +263,39 @@ function cambiarStatus(idUsuario, checkbox) {
             idUsuario: idUsuario,
             status: status
         },
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader(header, token);
+        },
         success: function (result) {
 
             if (result.correct) {
 
                 let label = $(checkbox).next('.status-label');
 
-                if (status === 1) {
-                    label.text("Activo");
-                } else {
-                    label.text("Inactivo");
-                }
+                label.text(status === 1 ? "Activo" : "Inactivo");
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Actualizado',
+                    text: status === 1 
+                        ? 'El usuario fue activado correctamente'
+                        : 'El usuario fue desactivado correctamente',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    background: '#1e1e1e',
+                    color: '#fff'
+                });
 
             } else {
 
                 Swal.fire('Error', result.errorMessage, 'error');
-
                 checkbox.checked = !checkbox.checked;
             }
         },
         error: function () {
 
             Swal.fire('Error', 'No se pudo actualizar el status', 'error');
-
             checkbox.checked = !checkbox.checked;
-
         }
     });
 }

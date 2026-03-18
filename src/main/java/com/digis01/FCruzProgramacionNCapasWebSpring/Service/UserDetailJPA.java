@@ -18,7 +18,6 @@ public class UserDetailJPA implements UserDetailsService{
         this.usuarioDAOJPAImplementation = usuarioDAOJPAImplementation;
     }
 
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Result result = usuarioDAOJPAImplementation.GetByUsername(username);
@@ -32,6 +31,7 @@ public class UserDetailJPA implements UserDetailsService{
         return User.withUsername(usuario.getUserName()) 
                 .password(usuario.getPassword())
                 .roles(usuario.getRol().getNombreRol())
+                .disabled(usuario.getStatus() == 0)
                 .build();
     }
     

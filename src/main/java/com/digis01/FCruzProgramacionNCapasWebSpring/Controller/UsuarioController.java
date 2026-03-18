@@ -75,10 +75,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
     
-    @GetMapping("/login")
-    public String login() {
-        return "login"; 
-    }
     
     @GetMapping()          
     public String index (Model model){
@@ -734,7 +730,7 @@ public class UsuarioController {
         return result;
     }
     
-    @PostMapping("/Usuario/UpdateStatus")
+    @PostMapping("/UpdateStatus")
     @ResponseBody
     public Result UpdateStatus(@RequestParam int idUsuario, @RequestParam int status) {
 
