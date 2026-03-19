@@ -27,7 +27,6 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
 
-            // 🔥 Registrar provider
             .authenticationProvider(authenticationProvider())
 
             .authorizeHttpRequests(auth -> auth
